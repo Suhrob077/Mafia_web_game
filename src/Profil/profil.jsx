@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { auth, database } from "../firebase";
+import React, { useEffect, useState, useRef } from "react";
+import { auth, database, storage } from "../firebase";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { ref, onValue, update, runTransaction } from "firebase/database";
 import { useTranslation } from "react-i18next";
 import "./profil.css";
@@ -26,6 +27,8 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [loading, setLoading]     = useState(true);
   const [activating, setActivating] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef(null);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -64,6 +67,23 @@ const Profile = () => {
     setActivating(false);
   };
 
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 3 * 1024 * 1024) { alert("Rasm 3MB dan katta bo\'lmasin!"); return; }
+    setUploadingAvatar(true);
+    try {
+      const sRef = storageRef(storage, `avatars/${user.uid}`);
+      await uploadBytes(sRef, file);
+      const url = await getDownloadURL(sRef);
+      await update(ref(database, `users/${user.uid}`), { image: url, "quests/q_profile_img/progress": 1 });
+      alert("Profil rasmi yangilandi! ✅");
+    } catch (err) {
+      alert("Xato: " + err.message);
+    }
+    setUploadingAvatar(false);
+  };
+
   if (loading) return <div className="P_loading_screen">IDENTIFYING AGENT...</div>;
   if (!user)   return <div className="P_loading_screen">NO AGENT LOGGED IN</div>;
 
@@ -76,10 +96,13 @@ const Profile = () => {
       {/* HEADER */}
       <header className="P_main_header_bar">
         <div className="P_user_identity">
-          <div className="P_avatar_container">
+          <div className="P_avatar_container" style={{position:'relative', cursor:'pointer'}} onClick={() => fileInputRef.current?.click()}>
             <img src={user.image || "/avatars/default.jpg"} alt="Profile" className="P_avatar_img" />
-            <div className={`P_vip_badge P_vip_${user.vip?.toLowerCase()}`}>{user.vip || "None"}</div>
+            <div style={{position:'absolute',bottom:4,right:4,background:'rgba(0,0,0,0.75)',borderRadius:'50%',width:22,height:22,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'11px',border:'1px solid rgba(255,255,255,0.3)'}}>✏️</div>
+            <input ref={fileInputRef} type="file" accept="image/*" style={{display:'none'}} onChange={handleAvatarUpload} />
+            {uploadingAvatar && <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.6)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.7rem',color:'#81c784'}}>⏳</div>}
           </div>
+          <div className={`P_vip_badge P_vip_${user.vip?.toLowerCase()}`}>{user.vip || "None"}</div>
           <div className="P_user_text">
             <h1 className="P_display_name">{user.username}</h1>
             <div className="P_sub_details">

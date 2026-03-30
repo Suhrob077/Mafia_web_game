@@ -105,6 +105,7 @@ function MultiplayerGame({ user, roomId, onBack }) {
 
   // ===== GAME ENDED SCREEN =====
   if (s.gameState === 'ended') {
+    const hasBots = s.players.some(p => p.user_id?.startsWith('bot_'));
     const iWon = (s.gameResult === 'mafia' && (myRole === 'Mafia' || myRole === 'Don')) ||
                  (s.gameResult === 'civil' && myRole !== 'Mafia' && myRole !== 'Don');
     return (
@@ -112,7 +113,16 @@ function MultiplayerGame({ user, roomId, onBack }) {
         <div className="MG_end_card">
           <div className="MG_end_icon">{iWon ? '🏆' : '💀'}</div>
           <h1 className="MG_end_title">{s.announcement}</h1>
-          {iWon && (
+          {hasBots && (
+            <div style={{
+              background: 'rgba(255,170,0,0.15)', border: '1px solid rgba(255,170,0,0.5)',
+              borderRadius: '10px', padding: '12px 16px', margin: '12px 0', color: '#ffaa00',
+              fontSize: '0.88rem', textAlign: 'center'
+            }}>
+              🤖 Bu o'yinda botlar ishtirok etdi — sovg'alar berilmaydi!
+            </div>
+          )}
+          {iWon && !hasBots && (
             <div className="MG_rewards">
               <h3>🎁 Sovg'angiz:</h3>
               <div className="MG_reward_items">
@@ -173,9 +183,21 @@ function MultiplayerGame({ user, roomId, onBack }) {
   );
 
   // ===== MAIN GAME UI =====
+  const hasBots = s.players.some(p => p.user_id?.startsWith('bot_'));
+
   return (
     <div className={`MG_container ${s.isDay ? 'MG_day' : 'MG_night'}`}>
       {showSurrenderConfirm && <SurrenderModal />}
+
+      {/* BOT OGOHLANTIRISH */}
+      {hasBots && (
+        <div style={{
+          background: 'rgba(255,170,0,0.12)', borderBottom: '1px solid rgba(255,170,0,0.3)',
+          padding: '6px 16px', textAlign: 'center', color: '#ffaa00', fontSize: '0.8rem'
+        }}>
+          🤖 Botlar ishtirok etmoqda — bu o'yin uchun sovg'alar berilmaydi
+        </div>
+      )}
 
       {/* ANNOUNCEMENT */}
       {s.announcement && (

@@ -11,6 +11,8 @@
  * - G'oliblarga sovg'alar ko'rsatish
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { auth, database } from '../firebase';
+import { ref, update, get } from 'firebase/database';
 import useGameStore from '../store/useGameStore';
 import cb from '../assets/mafia_img/fonts/card_bg.png';
 import './SinglePlayer.css';
@@ -62,7 +64,38 @@ const SinglePlayer = ({ onBack, activeRole }) => {
     if (s.gameState === 'playing' && !s.isTimerPaused) {
       timer = setInterval(() => s.tick(), 1000);
     }
-    return () => clearInterval(timer);
+  
+  // ===== QUEST PROGRESS TRACKING =====
+  const trackSinglePlayerQuest = async (won, role) => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    try {
+      const snap = await get(ref(database, `users/${uid}/quests`));
+      const q = snap.exists() ? snap.val() : {};
+      const inc = (id) => ({ id, cur: q[id]?.progress || 0 });
+      const updates = {};
+      const add = (id, n=1) => { updates[`quests/${id}/progress`] = (q[id]?.progress || 0) + n; };
+
+      // Match counters
+      add('q_sp_play_1'); add('q_sp_play_3'); add('q_sp_play_5'); add('q_sp_play_10');
+      add('q_total_1'); add('q_total_3'); add('q_total_5'); add('q_total_10');
+      add('q_total_20'); add('q_total_30'); add('q_total_50'); add('q_total_75'); add('q_total_100');
+
+      if (won) {
+        add('q_sp_win_1'); add('q_sp_win_5'); add('q_sp_win_10');
+        add('q_win_total_5'); add('q_win_total_20'); add('q_win_total_50');
+        const r = role?.toLowerCase();
+        if (r === 'mafia')    { add('q_mafia_win_1'); add('q_mafia_win_3'); add('q_mafia_win_5'); add('q_mafia_win_10'); add('q_sp_mafia_win_3'); }
+        if (r === 'aholi')    { add('q_aholi_win_1'); add('q_aholi_win_3'); add('q_aholi_win_5'); add('q_aholi_win_10'); }
+        if (r === 'shifokor') { add('q_shifokor_win_1'); add('q_shifokor_win_3'); add('q_shifokor_win_5'); add('q_shifokor_win_10'); add('q_sp_shifokor_3'); }
+        if (r === 'komissar') { add('q_komissar_win_1'); add('q_komissar_win_3'); add('q_komissar_win_5'); add('q_komissar_win_10'); add('q_sp_komissar_3'); }
+        if (r === 'don')      { add('q_don_win_1'); add('q_don_win_3'); add('q_don_win_5'); add('q_don_win_10'); add('q_sp_don_win_3'); }
+      }
+      await update(ref(database, `users/${uid}`), updates);
+    } catch(err) { console.error('trackSinglePlayerQuest:', err); }
+  };
+
+  return () => clearInterval(timer);
   }, [s.gameState, s.isTimerPaused]);
 
   // Chat scroll

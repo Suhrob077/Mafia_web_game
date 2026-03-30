@@ -1,0 +1,56 @@
+.quest_wrap {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  color: #fff;
+  min-height: 100vh;
+}
+.quest_header { margin-bottom: 16px; }
+.quest_title { font-size: 1.6rem; color: gold; margin: 0 0 8px; }
+.quest_stats_bar { display: flex; gap: 20px; font-size: 0.9rem; margin-bottom: 8px; opacity: 0.85; }
+.quest_progress_outer { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.quest_progress_inner { height: 100%; background: linear-gradient(90deg, #4caf50, #81c784); border-radius: 4px; transition: width 0.5s; }
+.quest_notify {
+  background: rgba(76,175,80,0.2); border: 1px solid #4caf50;
+  color: #81c784; padding: 10px 16px; border-radius: 8px; margin-bottom: 12px;
+  font-weight: bold; text-align: center;
+}
+.quest_filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.quest_filter_btn {
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7); padding: 6px 12px; border-radius: 20px;
+  cursor: pointer; font-size: 0.8rem; transition: all 0.2s;
+}
+.quest_filter_btn:hover { background: rgba(255,255,255,0.12); }
+.quest_filter_btn.active { background: rgba(255,215,0,0.15); border-color: gold; color: gold; }
+
+.quest_list { display: flex; flex-direction: column; gap: 10px; }
+.quest_card {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 14px 16px; transition: all 0.2s;
+}
+.quest_card.claimed { opacity: 0.5; filter: grayscale(0.5); }
+.quest_card.ready { border-color: gold; background: rgba(255,215,0,0.05); }
+.quest_icon { font-size: 1.8rem; flex-shrink: 0; width: 36px; text-align: center; }
+.quest_info { flex: 1; }
+.quest_name { font-weight: bold; font-size: 0.92rem; margin-bottom: 2px; }
+.quest_desc { font-size: 0.78rem; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+.quest_bar_wrap { height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 3px; }
+.quest_bar_fill { height: 100%; background: linear-gradient(90deg, #3498db, #81c784); border-radius: 3px; transition: width 0.4s; }
+.quest_count { font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+.quest_right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.quest_reward { display: flex; gap: 6px; font-size: 0.8rem; color: gold; }
+.quest_claim_btn {
+  background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000;
+  border: none; border-radius: 8px; padding: 6px 14px; cursor: pointer;
+  font-weight: bold; font-size: 0.8rem; white-space: nowrap;
+}
+.quest_claim_btn:hover { transform: scale(1.05); }
+.quest_done_badge { color: #4caf50; font-size: 0.8rem; font-weight: bold; }
+.quest_locked_badge { color: rgba(255,255,255,0.3); font-size: 1rem; }
+
+@media (max-width: 600px) {
+  .quest_card { padding: 10px 12px; gap: 10px; }
+  .quest_icon { font-size: 1.4rem; }
+}

@@ -1,8 +1,3 @@
-/**
- * useMultiplayerGameStore.js
- * Multiplayer o'yin uchun asosiy store - Supabase Realtime bilan
- * Barcha game logikasi shu yerda (singleplayer kabi, lekin serverlar orqali)
- */
 import { create } from 'zustand';
 import { supabase } from '../multiplayer_rooms/mtt/supabaseClient';
 
@@ -244,6 +239,87 @@ const useMultiplayerGameStore = create((set, get) => ({
     set({ timerInterval: null });
   },
 
+  // ========== BOT AI ==========
+  // Botlar user_id 'bot_' bilan boshlanadi
+  runBotActions: async (playersData, isDay) => {
+    const { roomId, dayCount } = get();
+    const alivePlayers = playersData.filter(p => p.is_alive);
+    const bots = alivePlayers.filter(p => p.user_id?.startsWith('bot_'));
+    if (bots.length === 0) return playersData;
+
+    let updatedPlayers = [...playersData];
+
+    if (isDay) {
+      // ===== KUNDUZ: Botlar ovoz beradi =====
+      for (const bot of bots) {
+        const isMafia = bot.role === 'Mafia' || bot.role === 'Don';
+        // Mafia botlar civil larga, civil botlar tasodifiy ovoz beradi
+        const targets = alivePlayers.filter(p => {
+          if (p.user_id === bot.user_id) return false;
+          if (isMafia) return p.role !== 'Mafia' && p.role !== 'Don';
+          // Civil bot: agar kimdir Mafia sifatida bilinsa unga ovoz ber
+          return true;
+        });
+        if (targets.length === 0) continue;
+        // Ozroq aqlli: civil bot mafia rolini bilsa unga ovoz beradi
+        const knownMafia = targets.find(p => p.role === 'Mafia' || p.role === 'Don');
+        const target = (!isMafia && knownMafia && Math.random() > 0.4)
+          ? knownMafia
+          : targets[Math.floor(Math.random() * targets.length)];
+
+        const idx = updatedPlayers.findIndex(p => p.user_id === target.user_id);
+        if (idx !== -1) updatedPlayers[idx] = { ...updatedPlayers[idx], votes: (updatedPlayers[idx].votes || 0) + 1 };
+
+        await supabase.from('room_players')
+          .update({ votes: updatedPlayers[idx].votes })
+          .eq('room_id', roomId).eq('user_id', target.user_id);
+      }
+    } else {
+      // ===== TUN: Botlar harakat qiladi =====
+      for (const bot of bots) {
+        const civilians = alivePlayers.filter(p => p.role !== 'Mafia' && p.role !== 'Don' && p.user_id !== bot.user_id);
+        const mafiaTeam = alivePlayers.filter(p => (p.role === 'Mafia' || p.role === 'Don') && p.user_id !== bot.user_id);
+
+        if (bot.role === 'Don' || bot.role === 'Mafia') {
+          // Mafia bot: random civil ni o'ldiradi
+          if (civilians.length === 0) continue;
+          const victim = civilians[Math.floor(Math.random() * civilians.length)];
+          await supabase.from('night_actions').upsert({
+            room_id: roomId, actor_id: bot.user_id, target_id: victim.user_id,
+            action_type: 'kill', day_count: dayCount
+          }, { onConflict: 'room_id,actor_id,day_count' });
+
+        } else if (bot.role === 'Shifokor') {
+          // Shifokor bot: random civilni himoyalaydi (ba'zida o'zini)
+          const healTargets = [...civilians, bot];
+          const target = healTargets[Math.floor(Math.random() * healTargets.length)];
+          await supabase.from('night_actions').upsert({
+            room_id: roomId, actor_id: bot.user_id, target_id: target.user_id,
+            action_type: 'heal', day_count: dayCount
+          }, { onConflict: 'room_id,actor_id,day_count' });
+
+        } else if (bot.role === 'Komissar') {
+          // Komissar bot: mafiani tekshiradi yoki otadi
+          if (mafiaTeam.length > 0 && Math.random() > 0.5) {
+            const target = mafiaTeam[Math.floor(Math.random() * mafiaTeam.length)];
+            await supabase.from('night_actions').upsert({
+              room_id: roomId, actor_id: bot.user_id, target_id: target.user_id,
+              action_type: 'shoot', day_count: dayCount
+            }, { onConflict: 'room_id,actor_id,day_count' });
+          } else if (civilians.length > 0) {
+            const target = civilians[Math.floor(Math.random() * civilians.length)];
+            await supabase.from('night_actions').upsert({
+              room_id: roomId, actor_id: bot.user_id, target_id: target.user_id,
+              action_type: 'check', day_count: dayCount
+            }, { onConflict: 'room_id,actor_id,day_count' });
+          }
+        }
+        // Aholi bot: hech narsa qilmaydi (uxlaydi)
+      }
+    }
+    return updatedPlayers;
+  },
+
   // ========== PHASE END (admin) ==========
   handlePhaseEnd: async () => {
     const { isDay, myUserId, roomId } = get();
@@ -259,10 +335,14 @@ const useMultiplayerGameStore = create((set, get) => ({
     const isAdmin = playersData?.[0]?.user_id === myUserId;
     if (!isAdmin) return;
 
+    // Botlar harakatini bajarish (admin tomonidan)
+    const updatedAfterBots = await get().runBotActions(playersData, isDay);
+
     if (isDay) {
-      await get().resolveVoting(playersData);
+      await get().resolveVoting(updatedAfterBots);
     } else {
-      await get().resolveNight(playersData);
+      await get().resolveNight(updatedAfterBots);
+
     }
   },
 

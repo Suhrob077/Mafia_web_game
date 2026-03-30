@@ -1,19 +1,25 @@
-/**
- * useGameStore.js — TO'LDIRILGAN SINGLEPLAYER STORE
- * 
- * Tuzatmalar:
- * 1. Mafia qoidalariga to'liq mos keladi
- * 2. Komissar: tekshirish YOKI otish (ikkalasini emas)
- * 3. Shifokor: o'zini faqat 1 marta davolaydi
- * 4. Don: barcha mafia qarorlarini o'z zimmasiga oladi
- * 5. Game over to'g'ri hisoblanadi
- * 6. Bot AI yaxshilandi (mafia botlari bir-birini ovoz bermaydi)
- * 7. Voting result: tenglik bo'lsa hech kim ketmaydi
- * 8. Active role singleplayda ham ishlatilishi
- */
 import { create } from 'zustand';
 import { auth, database } from '../firebase';
 import { ref, update } from 'firebase/database';
+
+// ============ QUEST PROGRESS TRACKER ============
+// Bu funksiya o'yin tugaganda quest progressini yangilaydi
+export const trackQuestProgress = async (database, uid, questUpdates) => {
+  if (!uid || !questUpdates || questUpdates.length === 0) return;
+  const { ref, get, update } = await import('firebase/database');
+  try {
+    const snap = await get(ref(database, `users/${uid}/quests`));
+    const existing = snap.exists() ? snap.val() : {};
+    const updates = {};
+    for (const { id, increment } of questUpdates) {
+      const cur = existing[id]?.progress || 0;
+      updates[`quests/${id}/progress`] = cur + (increment || 1);
+    }
+    await update(ref(database, `users/${uid}`), updates);
+  } catch (err) {
+    console.error('trackQuestProgress error:', err);
+  }
+};
 
 const ROLES_MAP = {
   Don:      { side: 'mafia',  canKill: true,  canCheck: false, canHeal: false },
@@ -33,6 +39,7 @@ const useGameStore = create((set, get) => ({
   players: [],
   userRole: null,
   selectedVote: null,
+  hasVoted: false,            // FIX: foydalanuvchi bu kunda ovoz berdimi
   isTimerPaused: false,
   announcement: '',
   logs: [],
@@ -77,7 +84,7 @@ const useGameStore = create((set, get) => ({
       hasDoctorHealedSelf: false, gameResult: null,
       nightActionTarget: null, protectedId: null,
       isTimerPaused: false, sheriffUsedAction: false,
-      selectedVote: null,
+      selectedVote: null, hasVoted: false,
     });
   },
 
@@ -99,7 +106,7 @@ const useGameStore = create((set, get) => ({
 
   // ===== VOTING =====
   handleVote: (targetId) => {
-    const { isDay, players, isTimerPaused, gameState, userRole } = get();
+    const { isDay, players, isTimerPaused, gameState, userRole, hasVoted } = get();
     const user = players.find(p => p.isUser);
     if (isTimerPaused || !user.isAlive || gameState !== 'playing') return;
 
@@ -107,12 +114,14 @@ const useGameStore = create((set, get) => ({
     if (!target || !target.isAlive) return;
 
     if (isDay) {
-      if (targetId === user.id) return; // O'ziga ovoz bermaydi
+      if (targetId === user.id) return;
+      if (hasVoted) return;              // FIX: bir kunda faqat 1 marta ovoz
       const { selectedVote } = get();
       set(state => ({
         selectedVote: targetId,
+        hasVoted: true,                  // FIX: ovoz berildi
         players: state.players.map(p => {
-          if (p.id === targetId)    return { ...p, votes: p.votes + 1 };
+          if (p.id === targetId)     return { ...p, votes: p.votes + 1 };
           if (p.id === selectedVote) return { ...p, votes: Math.max(0, p.votes - 1) };
           return p;
         })
@@ -255,6 +264,8 @@ const useGameStore = create((set, get) => ({
             protectedId: null, nightActionTarget: null,
             sheriffUsedAction: false
           }));
+          // FIX: "N-kun boshlandi" xabarini 2.5 sekunddan keyin tozalash
+          setTimeout(() => set({ announcement: '' }), 2500);
         }
       }, 2000);
     }, 2000);
@@ -294,23 +305,44 @@ const useGameStore = create((set, get) => ({
       const updates = {};
       const faction = isMafia ? 'mafia' : 'aholi';
 
-      // Umumiy o'yinlar
-      updates[`/${faction}/${faction === 'mafia' ? 'mafia_all_game' : 'aholi_all_game'}`] = Date.now(); // increment kerak, lekin increment uchun transaction kerak
-      if (won) updates[`/${faction}/wins`] = Date.now();
+      // ==== Statistika — runTransaction bilan to'g'ri increment ====
+      const { runTransaction } = await import('firebase/database');
+      // all_game
+      await runTransaction(ref(database, `users/${currentUser.uid}/${faction}/${faction === 'mafia' ? 'mafia_all_game' : 'aholi_all_game'}`), (cur) => (cur || 0) + 1);
+      if (won) await runTransaction(ref(database, `users/${currentUser.uid}/${faction}/wins`), (cur) => (cur || 0) + 1);
 
       // Rol statistikasi
-      if (userRole === 'Don')      updates['/mafia/mafia_rollar/Don']      = Date.now();
-      if (userRole === 'Mafia')    updates['/mafia/mafia_rollar/Mafia']    = Date.now();
-      if (userRole === 'Komissar') updates['/aholi/rollar/kamissar']       = Date.now();
-      if (userRole === 'Shifokor') updates['/aholi/rollar/shifokor']       = Date.now();
-      if (userRole === 'Aholi')    updates['/aholi/rollar/tinchaholi']     = Date.now();
+      if (userRole === 'Don')      await runTransaction(ref(database, `users/${currentUser.uid}/mafia/mafia_rollar/Don`), c => (c||0)+1);
+      if (userRole === 'Mafia')    await runTransaction(ref(database, `users/${currentUser.uid}/mafia/mafia_rollar/Mafia`), c => (c||0)+1);
+      if (userRole === 'Komissar') await runTransaction(ref(database, `users/${currentUser.uid}/aholi/rollar/kamissar`), c => (c||0)+1);
+      if (userRole === 'Shifokor') await runTransaction(ref(database, `users/${currentUser.uid}/aholi/rollar/shifokor`), c => (c||0)+1);
+      if (userRole === 'Aholi')    await runTransaction(ref(database, `users/${currentUser.uid}/aholi/rollar/tinchaholi`), c => (c||0)+1);
 
-      // Aktiv rolni 1 dan kamaytirish
+      // Aktiv rolni inventardan kamaytirish (to'g'ri transaction bilan)
       const { activeRole } = get();
       if (activeRole && activeRole !== 'none') {
-        // Bu serverda bo'lishi kerak, lekin local sifatida
-        updates[`/inventory/roles/${activeRole}`] = 0; // sifatida reset - real projectda transaction ishlating
+        await runTransaction(ref(database, `users/${currentUser.uid}/inventory/roles/${activeRole}`), c => Math.max(0, (c||0) - 1));
         updates['/active_role'] = 'none';
+      }
+
+      // ==== QUEST PROGRESS ====
+      const snapQ = await (await import('firebase/database')).get(ref(database, `users/${currentUser.uid}/quests`));
+      const q = snapQ.exists() ? snapQ.val() : {};
+      const add = (id, n=1) => { updates[`quests/${id}/progress`] = (q[id]?.progress || 0) + n; };
+
+      add('q_sp_play_1'); add('q_sp_play_3'); add('q_sp_play_5'); add('q_sp_play_10');
+      add('q_total_1'); add('q_total_3'); add('q_total_5'); add('q_total_10');
+      add('q_total_20'); add('q_total_30'); add('q_total_50'); add('q_total_75'); add('q_total_100');
+
+      if (won) {
+        add('q_sp_win_1'); add('q_sp_win_5'); add('q_sp_win_10');
+        add('q_win_total_5'); add('q_win_total_20'); add('q_win_total_50');
+        const r = userRole?.toLowerCase();
+        if (r === 'mafia')    { add('q_mafia_win_1'); add('q_mafia_win_3'); add('q_mafia_win_5'); add('q_mafia_win_10'); add('q_sp_mafia_win_3'); }
+        if (r === 'aholi')    { add('q_aholi_win_1'); add('q_aholi_win_3'); add('q_aholi_win_5'); add('q_aholi_win_10'); }
+        if (r === 'shifokor') { add('q_shifokor_win_1'); add('q_shifokor_win_3'); add('q_shifokor_win_5'); add('q_shifokor_win_10'); add('q_sp_shifokor_3'); }
+        if (r === 'komissar') { add('q_komissar_win_1'); add('q_komissar_win_3'); add('q_komissar_win_5'); add('q_komissar_win_10'); add('q_sp_komissar_3'); }
+        if (r === 'don')      { add('q_don_win_1'); add('q_don_win_3'); add('q_don_win_5'); add('q_don_win_10'); add('q_sp_don_win_3'); }
       }
 
       await update(userRef, updates);
@@ -357,7 +389,8 @@ const useGameStore = create((set, get) => ({
 
   resetVotes: () => set(state => ({
     players: state.players.map(p => ({ ...p, votes: 0 })),
-    selectedVote: null, nightActionTarget: null, protectedId: null
+    selectedVote: null, nightActionTarget: null, protectedId: null,
+    hasVoted: false,    // FIX: yangi kunda ovoz berish imkonini qaytarish
   })),
 
   addLog: (user, text) => set(state => ({

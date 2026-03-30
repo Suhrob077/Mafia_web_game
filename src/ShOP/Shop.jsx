@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { auth, database } from "../firebase";
-import { ref, onValue, update, runTransaction } from "firebase/database";
+import { ref, onValue, update, runTransaction, get } from "firebase/database";
 import './Shop.css';
 
 const Shop = () => {
@@ -39,11 +39,8 @@ const Shop = () => {
       if (type === 'coin') updates['/coins'] = (userData.coins || 0) - price;
       else if (type === 'star') updates['/stars'] = (userData.stars || 0) - price;
 
-      if (options.isRole) {
-        const current = userData.inventory?.roles?.[itemId] || 0;
-        updates[`/inventory/roles/${itemId}`] = current + (options.count || 1);
-      }
-      if (options.isStatus) updates['/vip'] = options.statusName;
+      if (options.isRole) { trackShopQuest('q_buy_role_any'); trackShopQuest('q_buy_role_5'); trackShopQuest('q_buy_role_20'); const current = userData.inventory?.roles?.[itemId] || 0; updates[`/inventory/roles/${itemId}`] = current + (options.count || 1); }
+      if (options.isStatus) { updates['/vip'] = options.statusName; trackShopQuest('q_vip_buy'); }
       if (itemId === 'ex_star') updates['/stars'] = (userData.stars || 0) + 5;
       if (itemId === 'ex_coin') updates['/coins'] = (userData.coins || 0) + 2500;
       if (options.customUpdate) Object.assign(updates, options.customUpdate);
@@ -56,11 +53,22 @@ const Shop = () => {
     }
   };
 
+  const trackShopQuest = async (questId, inc=1) => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+    try {
+      const snap = await get(ref(database, `users/${uid}/quests/${questId}`));
+      const cur = snap.exists() ? (snap.val().progress || 0) : 0;
+      await update(ref(database, `users/${uid}`), { [`quests/${questId}/progress`]: cur + inc });
+    } catch(e) { console.error(e); }
+  };
+
   const handleSpin = () => {
     if ((userData.stars || 0) < 5) return notify('Yetarli yulduz yo\'q! 5 ⭐ kerak.');
     setIsSpinning(true);
     setShowPrize(null);
     handlePurchase(5, 'star', 'wheel_spin', { silent: true });
+    trackShopQuest('q_spin_1'); trackShopQuest('q_spin_5'); trackShopQuest('q_spin_10'); trackShopQuest('q_spin_20'); trackShopQuest('q_spin_30');
 
     const prizes = [
       { id: 'shifokor', name: 'Shifokor (1x)',  type: 'role', img: '💉', count: 1 },
@@ -95,9 +103,9 @@ const Shop = () => {
 
   const roles = [
     { id: 'don',      name: 'Don',      price: 2000, type: 'coin', img: '🕶️', desc: 'Mafia boshlig\'i' },
-    { id: 'mafia',    name: 'Mafia',    price: 1500, type: 'coin', img: '🔫', desc: 'Tunda o\'ldiradi' },
-    { id: 'kamissar', name: 'Komissar', price: 10,   type: 'star', img: '🕵️', desc: 'Tekshiradi/Otadi' },
-    { id: 'shifokor', name: 'Shifokor', price: 8,    type: 'star', img: '💉', desc: 'Himoyalaydi' },
+    { id: 'mafia',    name: 'Mafia',    price: 3000, type: 'coin', img: '🔫', desc: 'Tunda o\'ldiradi' },
+    { id: 'kamissar', name: 'Komissar', price: 2,   type: 'star', img: '🕵️', desc: 'Tekshiradi/Otadi' },
+    { id: 'shifokor', name: 'Shifokor', price: 1,    type: 'star', img: '💉', desc: 'Himoyalaydi' },
   ];
 
   const donates = [
@@ -246,23 +254,128 @@ const Shop = () => {
         </div>
       </section>
 
-      {/* DONAT */}
+      {/* DONAT — Google Pay */}
       <section className="shop_section">
         <h2 className="shop_section_title">💳 Donat</h2>
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', marginBottom: '12px' }}>
-          Haqiqiy to'lov tizimi ulanganda faollashadi.
+          Google Pay orqali to'liq xavfsiz to'lov.
         </p>
         <div className="shop_grid_alt">
           {donates.map(pack => (
             <div key={pack.id} className={`shop_donate_card ${pack.popular ? 'best_deal' : ''}`}>
               {pack.popular && <span className="popular_tag">🔥 Eng Yaxshi</span>}
               <span className="shop_donate_amount">{pack.amount}</span>
-              <button className="shop_donate_btn" onClick={() => notify('Tez orada! 🚀')}>{pack.cost}</button>
+              <GooglePayButton
+                pack={pack}
+                onSuccess={(amount) => {
+                  // Muvaffaqiyatli to'lovdan keyin yulduz qo'shish
+                  const starsMap = { d1: 100, d2: 500, d3: 1200, d4: 2500 };
+                  const earnedStars = starsMap[pack.id] || 100;
+                  handlePurchase(0, 'none', pack.id, {
+                    silent: false,
+                    customUpdate: { '/stars': (userData.stars || 0) + earnedStars }
+                  });
+                  notify(`✅ +${earnedStars}⭐ qo'shildi! To'lov muvaffaqiyatli!`);
+                }}
+              />
             </div>
           ))}
         </div>
+        <p style={{ color:'rgba(255,255,255,0.3)', fontSize:'0.72rem', marginTop:'12px', textAlign:'center' }}>
+          🔒 Barcha to'lovlar Google Pay orqali xavfsiz amalga oshiriladi
+        </p>
       </section>
     </div>
+  );
+};
+
+
+// ============================================================
+// Google Pay Button komponenti
+// ============================================================
+const GooglePayButton = ({ pack, onSuccess }) => {
+  const handleGooglePay = async () => {
+    // Google Pay Payment Request
+    if (!window.PaymentRequest) {
+      alert('Brauzeringiz Google Pay ni qo\'llab-quvvatlamaydi. Iltimos yangi brauzer ishlating.');
+      return;
+    }
+    try {
+      const paymentMethods = [{
+        supportedMethods: 'https://google.com/pay',
+        data: {
+          environment: 'TEST', // Ishlab chiqishda 'TEST', real loyihada 'PRODUCTION'
+          apiVersion: 2,
+          apiVersionMinor: 0,
+          allowedPaymentMethods: [{
+            type: 'CARD',
+            parameters: {
+              allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+              allowedCardNetworks: ['AMEX', 'DISCOVER', 'INTERAC', 'JCB', 'MASTERCARD', 'VISA'],
+            },
+            tokenizationSpecification: {
+              type: 'PAYMENT_GATEWAY',
+              parameters: {
+                gateway: 'example', // O'zingizning payment gateway'ingiz
+                gatewayMerchantId: 'exampleMerchantId',
+              },
+            },
+          }],
+          merchantInfo: {
+            merchantId: '01234567890123456789', // Google Merchant ID
+            merchantName: 'Mafia Game',
+          },
+          transactionInfo: {
+            totalPriceStatus: 'FINAL',
+            totalPrice: pack.cost.replace('$', ''),
+            currencyCode: 'USD',
+            countryCode: 'US',
+          },
+        },
+      }];
+
+      const details = {
+        total: {
+          label: `${pack.amount} — Mafia Game`,
+          amount: { currency: 'USD', value: pack.cost.replace('$', '') },
+        },
+      };
+
+      const request = new PaymentRequest(paymentMethods, details);
+      const canPay = await request.canMakePayment();
+      if (!canPay) {
+        alert('Google Pay mavjud emas. Kartangizni Google Pay ga qo\'shing.');
+        return;
+      }
+      const paymentResponse = await request.show();
+      await paymentResponse.complete('success');
+      onSuccess?.(pack.cost);
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Google Pay error:', err);
+        alert('To\'lovda xato: ' + err.message);
+      }
+    }
+  };
+
+  return (
+    <button
+      className="shop_donate_btn"
+      onClick={handleGooglePay}
+      style={{
+        display:'flex', alignItems:'center', justifyContent:'center', gap:'8px',
+        background:'#000', color:'#fff', border:'none', borderRadius:'8px',
+        padding:'10px 16px', cursor:'pointer', fontWeight:'bold', width:'100%'
+      }}
+    >
+      <img
+        src="https://www.gstatic.com/instantbuy/svg/dark_gpay.svg"
+        alt="Google Pay"
+        style={{ height:22 }}
+        onError={e => e.target.style.display='none'}
+      />
+      <span>{pack.cost}</span>
+    </button>
   );
 };
 
