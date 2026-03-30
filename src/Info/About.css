@@ -1,0 +1,141 @@
+/* About.css */
+.A_about_container {
+  padding: 40px;
+  color: #e0e0e0;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Courier New', Courier, monospace; /* Detective style font */
+  animation: A_fadeIn 0.8s ease-out;
+}
+
+@keyframes A_fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.A_about_header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.A_about_title {
+  font-size: 3rem;
+  letter-spacing: 5px;
+  color: #ff4d4d; /* Mafia Red */
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 10px rgba(255, 77, 77, 0.3);
+}
+
+.A_title_underline {
+  height: 4px;
+  width: 100px;
+  background: #ff4d4d;
+  margin: 0 auto;
+}
+
+.A_about_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.A_about_card {
+  background: rgba(30, 30, 35, 0.8);
+  border: 1px solid #333;
+  padding: 30px;
+  border-radius: 4px; /* O'tkirroq burchaklar mafiya uslubida */
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.A_about_card:hover {
+  border-color: #ff4d4d;
+  background: rgba(40, 40, 45, 0.9);
+  transform: scale(1.02);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.A_card_title {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #444;
+  padding-bottom: 10px;
+}
+
+.A_icon {
+  margin-right: 15px;
+}
+
+.A_card_text {
+  line-height: 1.6;
+  color: #bbb;
+}
+
+.A_rules_list {
+  list-style: none;
+  padding: 0;
+}
+
+.A_rules_list li {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.A_rule_num {
+  color: #ff4d4d;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.A_info_item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+.A_info_label {
+  color: #888;
+}
+
+.A_info_value {
+  color: #fff;
+  font-weight: bold;
+}
+
+.A_status_dot {
+  width: 10px;
+  height: 10px;
+  background: #00ff00;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #00ff00;
+  align-self: center;
+}
+
+.A_version_tag {
+  margin-top: 20px;
+  text-align: right;
+  font-size: 0.8rem;
+  color: #ff4d4d;
+  font-style: italic;
+}
+
+.A_about_footer {
+  margin-top: 60px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #555;
+  border-top: 1px solid #222;
+  padding-top: 20px;
+}
+
+/* Dark Theme bilan ishlash */
+.dark-theme .A_about_card {
+  background: rgba(15, 15, 20, 0.9);
+}

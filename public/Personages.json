@@ -1,0 +1,25 @@
+{
+  "characters": [
+    {
+      "character": "Don",
+      "image": "../src/assets/mafia_img/cards/don.png"
+    },
+    {
+      "character": "Mafia",
+      "image": "../src/assets/mafia_img/cards/mafia.png"
+      
+    },
+    {
+      "character": "Komissar",
+      "image": "../src/assets/mafia_img/cards/komissar.png"
+    },
+    {
+      "character": "Doktor",
+      "image": "../src/assets/mafia_img/cards/shifokor.png"
+    },
+    {
+      "character": "Tinch aholi",
+      "image": "../src/assets/mafia_img/cards/aholi.png"
+    }
+  ]
+}

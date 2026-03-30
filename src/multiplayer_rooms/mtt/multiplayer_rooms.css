@@ -1,0 +1,71 @@
+/* multiplayer_rooms.css - To'liq versiya */
+.MS_wrap { min-height: 100vh; background: #0d0d1a; color: white; font-family: 'Courier New', monospace; padding: 20px; box-sizing: border-box; }
+
+.MS_header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.MS_back_btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.MS_back_btn:hover { background: rgba(255,255,255,0.2); }
+.MS_title { font-size: clamp(1.2rem,4vw,1.8rem); font-weight: 900; color: #f9c74f; letter-spacing: 3px; margin: 0; }
+
+.MS_lobby { max-width: 900px; margin: 0 auto; }
+.MS_topGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+@media (max-width: 600px) { .MS_topGrid { grid-template-columns: 1fr; } }
+
+.MS_card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.MS_card h3 { margin: 0; color: #f9c74f; font-size: 1rem; }
+
+.MS_input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; padding: 10px 14px; font-size: 0.9rem; width: 100%; box-sizing: border-box; }
+.MS_input:focus { outline: none; border-color: #f9c74f; }
+.MS_input option { background: #1a1a2e; }
+
+.MS_rooms { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; }
+.MS_rooms_header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.MS_rooms_header h3 { margin: 0; color: rgba(255,255,255,0.7); font-size: 0.95rem; }
+.MS_empty { text-align: center; color: rgba(255,255,255,0.4); padding: 32px; font-style: italic; }
+
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 8px 12px; color: rgba(255,255,255,0.5); font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+td { padding: 10px 12px; color: rgba(255,255,255,0.85); font-size: 0.88rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+tr:hover td { background: rgba(255,255,255,0.04); }
+code { background: rgba(249,199,79,0.15); color: #f9c74f; padding: 2px 8px; border-radius: 4px; font-size: 0.95rem; font-family: 'Courier New', monospace; }
+
+.MS_btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; letter-spacing: 1px; font-family: 'Courier New', monospace; }
+.MS_btn.blue  { background: #4361ee; color: white; }
+.MS_btn.gold  { background: linear-gradient(135deg,#f9c74f,#f8961e); color: #1a1a2e; }
+.MS_btn.green { background: #4caf50; color: white; }
+.MS_btn.red   { background: #e63946; color: white; }
+.MS_btn.small { padding: 6px 12px; font-size: 0.78rem; }
+.MS_btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.MS_btn:disabled { cursor: not-allowed; }
+
+.MS_room { max-width: 700px; margin: 0 auto; }
+.MS_room_header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+.MS_admin_badge { background: rgba(249,199,79,0.15); color: #f9c74f; border: 1px solid #f9c74f44; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+
+.MS_active_role_banner { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.4); border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; color: #81c784; font-size: 0.88rem; }
+.MS_active_role_banner strong { color: #a5d6a7; }
+
+.MS_players { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.MS_player { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: all 0.3s; }
+.MS_player.ready { border-color: rgba(76,175,80,0.5); background: rgba(76,175,80,0.08); }
+
+.MS_player_img_wrap { position: relative; }
+.MS_player_img_wrap img { width: 56px; height: 56px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); object-fit: cover; background: #333; }
+.MS_player.ready .MS_player_img_wrap img { border-color: #4caf50; }
+.MS_ready_check { position: absolute; bottom: -2px; right: -2px; background: #4caf50; color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; }
+.MS_player_name { font-size: 0.78rem; color: rgba(255,255,255,0.85); text-align: center; word-break: break-all; }
+.MS_status_dot { font-size: 0.65rem; font-weight: bold; letter-spacing: 1px; }
+.MS_status_dot.green { color: #4caf50; }
+.MS_status_dot.red   { color: #ff6b6b; }
+
+.MS_requirements { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.MS_req_item { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 14px; font-size: 0.82rem; color: rgba(255,255,255,0.6); transition: all 0.3s; }
+.MS_req_item.met { border-color: rgba(76,175,80,0.5); color: #4caf50; background: rgba(76,175,80,0.08); }
+
+.MS_bottom { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.MS_waiting_start { color: rgba(255,255,255,0.5); font-size: 0.85rem; font-style: italic; padding: 10px; }
+
+@media (max-width: 500px) {
+  .MS_players { grid-template-columns: repeat(3, 1fr); }
+  .MS_bottom { flex-direction: column; }
+  .MS_bottom .MS_btn { width: 100%; }
+}

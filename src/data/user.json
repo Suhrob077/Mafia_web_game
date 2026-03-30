@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "lokation":{
+      "country":"Uzbekistan"
+    },
+    "username": "Don_Shohjaxon",
+    "image": "/avatars/user1.jpg",
+    "coins": 12500,
+    "stars": 87,
+    "vip": "Gold",
+    "aholi": {
+      "aholi_all_game": 30,
+      "wins" :10,
+      "rollar":{
+        "tinchaholi": 16,
+        "kamissar": 3,
+        "shifokor": 5
+      }
+    },
+    "mafia":{
+      "mafia_all_game": 14,
+      "wins" :10,
+      "kills" :17,
+      "mafia_rollar":{
+        "Mafia": 7,
+        "Don": 7
+      }
+    }
+  }
+]

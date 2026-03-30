@@ -1,0 +1,528 @@
+/* ==========================================================
+   MAFIA: THE GAME - ADVANCED STYLESHEET (SOLO MODE)
+   ========================================================== */
+   :root {
+    --solo-gold: #c5a059;
+    --solo-gold-glow: rgba(197, 160, 89, 0.4);
+    --solo-red: #e74c3c;
+    --solo-green: #2ecc71;
+    --solo-bg: #0a0c10;
+    --solo-card-bg: #1c2128;
+    --solo-sidebar: #13161b;
+    --solo-glass: rgba(255, 255, 255, 0.03);
+    --solo-glass-border: rgba(255, 255, 255, 0.08);
+    --solo-font: 'Inter', 'Segoe UI', sans-serif;
+    --solo-transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.Solo_MainContainer {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #1e272e 0%, #000 100%);
+    color: #fff;
+    font-family: var(--solo-font);
+    overflow: hidden;
+    position: relative;
+}
+
+/* --- TUNGI REJIM EFFEKTI --- */
+.Solo_NightTheme {
+    background: radial-gradient(circle at center, #0f0c29 0%, #000 100%);
+}
+
+.Solo_NightTheme::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 50, 0.15);
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* --- SIDEBAR (CHAP MENYU) --- */
+.Solo_Sidebar {
+    width: 260px;
+    background: var(--solo-sidebar);
+    border-right: 1px solid var(--solo-glass-border);
+    display: flex;
+    flex-direction: column;
+    padding: 25px 0;
+    z-index: 50;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+}
+
+.Solo_LogoArea {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.Solo_LogoArea h2 {
+    font-size: 28px;
+    letter-spacing: 5px;
+    color: var(--solo-gold);
+    margin: 0;
+    text-shadow: 0 0 15px var(--solo-gold-glow);
+}
+
+.Solo_LogoArea span {
+    font-size: 10px;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.Solo_Nav {
+    flex: 1;
+}
+
+.Solo_NavBtn {
+    width: 100%;
+    padding: 18px 30px;
+    background: transparent;
+    border: none;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: var(--solo-transition);
+    font-size: 14px;
+    border-left: 4px solid transparent;
+}
+
+.Solo_NavBtn:hover, .Solo_NavBtn.active {
+    color: var(--solo-gold);
+    background: rgba(197, 160, 89, 0.05);
+    border-left: 4px solid var(--solo-gold);
+}
+
+.Solo_DayCounter {
+    padding: 20px;
+    margin: 20px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    text-align: center;
+    color: var(--solo-gold);
+    font-weight: bold;
+    border: 1px dashed var(--solo-glass-border);
+}
+
+/* --- GAME ARENA --- */
+.Solo_GameArena {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.Solo_TopBar {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    z-index: 100;
+}
+
+.Solo_MenuBtn {
+    background: var(--solo-glass);
+    border: 1px solid var(--solo-glass-border);
+    color: #fff;
+    padding: 10px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.Solo_Dropdown {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 200px;
+    background: #1a1d23;
+    border-radius: 8px;
+    border: 1px solid var(--solo-glass-border);
+    padding: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+}
+
+.Solo_Dropdown button {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    color: #ccc;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.Solo_Dropdown button:hover {
+    background: var(--solo-glass);
+    color: #fff;
+}
+
+/* --- CIRCLE TABLE --- */
+.Solo_CircleTable {
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    position: relative;
+    border: 15px solid rgba(40, 45, 55, 0.5);
+    background: radial-gradient(circle, rgba(30,35,45,0.4) 0%, transparent 70%);
+}
+
+.Solo_PlayerSlot {
+    position: absolute;
+    width: 120px;
+    height: 160px;
+    top: 50%;
+    left: 50%;
+    margin-top: -80px;
+    margin-left: -60px;
+    transition: var(--solo-transition);
+    cursor: pointer;
+    z-index: 20;
+}
+
+/* Hover mantiqi: Faqat clic rejimida ishlaydi */
+.Solo_PlayerSlot:hover:not(.Dead) {
+    transform: scale(1.15) !important;
+    z-index: 100;
+}
+
+.Solo_CardFrame {
+    width: 100%;
+    height: 120px;
+    background: #252a33;
+    border-radius: 12px;
+    border: 2px solid #3d4451;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.Solo_CardFrame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.5s;
+}
+
+.Solo_PlayerSlot.Voted .Solo_CardFrame {
+    border-color: var(--solo-gold);
+    box-shadow: 0 0 20px var(--solo-gold-glow);
+}
+
+.Solo_VoteBadge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: var(--solo-red);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    border: 2px solid #fff;
+    animation: pulse 1.5s infinite;
+}
+
+.Solo_PlayerMeta {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.Solo_PlayerMeta span {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.Solo_PlayerMeta small {
+    color: var(--solo-green);
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+/* O'lim Holati */
+.Solo_PlayerSlot.Dead .Solo_CardFrame {
+    filter: grayscale(1) brightness(0.5);
+    border-color: var(--solo-red);
+}
+
+.Solo_PlayerSlot.Dead .Solo_PlayerMeta small {
+    color: var(--solo-red);
+}
+
+.Solo_X_Mark {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 60px;
+    color: var(--solo-red);
+    font-weight: 900;
+    text-shadow: 0 0 20px #000;
+    pointer-events: none;
+    z-index: 30;
+}
+
+/* --- CENTRAL TIMER --- */
+.Solo_TableCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+}
+
+.Solo_TimerCircle {
+    width: 220px;
+    height: 220px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(15px);
+    border: 2px solid var(--solo-gold-glow);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.Solo_BigClock {
+    font-size: 64px;
+    margin: 5px 0;
+    font-family: 'Monaco', monospace;
+    color: #fff;
+}
+
+.Solo_PhaseLabel {
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--solo-gold);
+}
+
+/* --- ANNOUNCEMENTS --- */
+.Solo_Announcement {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    animation: fadeIn 0.5s ease;
+}
+
+.Solo_Announcement h2 {
+    font-size: 48px;
+    color: var(--solo-gold);
+    text-align: center;
+    padding: 40px;
+    border-top: 2px solid var(--solo-gold);
+    border-bottom: 2px solid var(--solo-gold);
+    background: rgba(0,0,0,0.5);
+}
+
+/* --- RULES MODAL --- */
+.Solo_RulesOverlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.Solo_RulesContent {
+    width: 600px;
+    max-height: 80vh;
+    background: #1a1d23;
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid var(--solo-gold);
+}
+
+.Solo_RulesList {
+    height: 400px;
+    overflow-y: auto;
+    margin: 20px 0;
+    padding-right: 15px;
+}
+
+.Solo_RulesList p {
+    padding: 12px;
+    border-bottom: 1px solid #333;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.Solo_RulesList p.current {
+    color: var(--solo-gold);
+    background: rgba(197, 160, 89, 0.1);
+    border-left: 3px solid var(--solo-gold);
+}
+
+/* --- CHAT SIDE --- */
+.Solo_ChatSide {
+    width: 320px;
+    background: rgba(19, 22, 27, 0.95);
+    border-left: 1px solid var(--solo-glass-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.Solo_ChatHeader {
+    padding: 25px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border-bottom: 1px solid var(--solo-glass-border);
+}
+
+.Solo_ChatList {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.Solo_ChatMessage {
+    margin-bottom: 15px;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+}
+
+.Solo_ChatMessage b.gold { color: var(--solo-gold); }
+
+.Solo_ChatInput {
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.Solo_ChatInput input {
+    flex: 1;
+    background: #000;
+    border: 1px solid var(--solo-glass-border);
+    border-radius: 5px;
+    padding: 10px;
+    color: #fff;
+}
+
+.Solo_ChatInput button {
+    background: var(--solo-gold);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* --- START CARD --- */
+.Solo_FullOverlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.Solo_StartCard {
+    text-align: center;
+    animation: zoomIn 0.6s ease;
+}
+
+.Solo_StartCard h1 {
+    font-size: 72px;
+    color: var(--solo-gold);
+    margin-bottom: 10px;
+}
+
+.Solo_StartCard button {
+    background: var(--solo-gold);
+    color: #000;
+    border: none;
+    padding: 15px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 40px;
+    cursor: pointer;
+    margin-top: 30px;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Scrollbar Styling */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--solo-gold); border-radius: 10px; }
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .Solo_CircleTable { transform: scale(0.7); }
+    .Solo_Sidebar { width: 80px; }
+    .Solo_Sidebar h2, .Solo_Sidebar span, .Solo_Sidebar button span { display: none; }
+}
+
+/* TO'LDIRILGAN STILLAR */
+.Solo_EndScreen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 300; }
+.Solo_EndScreen.win  { background: radial-gradient(circle, #1a3a1a, #0d1a0d); }
+.Solo_EndScreen.lose { background: radial-gradient(circle, #3a1a1a, #1a0d0d); }
+.Solo_EndCard { background: rgba(0,0,0,0.9); border-radius: 20px; padding: 32px; text-align: center; color: white; max-width: 600px; width: 95%; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+.Solo_EndIcon { font-size: 4rem; margin-bottom: 8px; }
+.Solo_EndTitle { font-size: 1.6rem; margin-bottom: 16px; }
+.Solo_Rewards { background: rgba(255,215,0,0.1); border: 1px solid gold; border-radius: 12px; padding: 12px; margin-bottom: 16px; }
+.Solo_RewardItems { display: flex; gap: 16px; justify-content: center; margin-top: 8px; }
+.Solo_RewardItems span { background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 8px; font-weight: bold; }
+.Solo_RolesReveal { margin: 16px 0; }
+.Solo_RolesReveal h4 { margin-bottom: 8px; }
+.Solo_RevealGrid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.Solo_RevealCard { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 8px; gap: 4px; }
+.Solo_RevealCard img { width: 48px; height: 68px; object-fit: cover; border-radius: 4px; }
+.Solo_RevealCard span { font-size: 0.72rem; color: rgba(255,255,255,0.8); }
+.Solo_RevealRole { color: gold !important; font-weight: bold; }
+
+/* MODAL */
+.Solo_Modal_Overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 200; }
+.Solo_Modal { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 24px; color: white; max-width: 520px; width: 95%; max-height: 80vh; overflow-y: auto; position: relative; }
+.Solo_Modal_Close { position: absolute; top: 12px; right: 12px; background: none; border: none; color: white; font-size: 1.1rem; cursor: pointer; opacity: 0.7; }
+.Solo_Modal_Close:hover { opacity: 1; }
+.Solo_Rules_Text { white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 0.82rem; color: rgba(255,255,255,0.85); line-height: 1.6; margin: 0; }
+
+/* URGENCY */
+.Solo_BigClock.urgent { color: #ff4444 !important; animation: urgentPulse 0.5s infinite; }
+@keyframes urgentPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+/* DEAD OVERLAY */
+.Solo_DeadOverlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; background: rgba(0,0,0,0.65); border-radius: 6px; }
+
+/* ROLE LABEL */
+.RoleLabel { display: block; font-size: 0.6rem; color: gold; font-weight: bold; margin-top: 2px; }
+
+/* MY SLOT */
+.MySlot .Solo_CardFrame { border-color: #4caf50 !important; box-shadow: 0 0 12px #4caf5055 !important; }
+
+/* WIN/LOSE TEXT */
+.win-text  { color: #4caf50; text-shadow: 0 0 20px #4caf5066; }
+.lose-text { color: #ff4444; text-shadow: 0 0 20px #ff444466; }

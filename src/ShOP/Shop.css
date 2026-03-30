@@ -1,0 +1,612 @@
+/* Shop.css */
+
+.shop_container {
+  padding: 20px;
+  max-height: 100vh;
+  overflow-y: auto;
+  color: var(--text-color, #333);
+  transition: all 0.3s ease;
+}
+/* Yutuq chiqish oynasi */
+.shop_prize_overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.shop_prize_card {
+  background: #1a1a2e;
+  padding: 30px;
+  border-radius: 20px;
+  border: 2px solid gold;
+  text-align: center;
+  color: white;
+  transform: scale(0.8);
+  animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.shop_prize_icon {
+  font-size: 80px;
+  margin: 20px 0;
+}
+
+/* Baraban animatsiyasi */
+.wheel_graphic {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 10px solid #333;
+  position: relative;
+  background: conic-gradient(
+    #ff4757 0deg 90deg, 
+    #2ed573 90deg 180deg, 
+    #1e90ff 180deg 270deg, 
+    #eccc68 270deg 360deg
+  );
+  display: flex; justify-content: center; align-items: center;
+}
+
+.spinning {
+  animation: spinWheel 3s cubic-bezier(0.15, 0, 0.15, 1) forwards;
+}
+
+@keyframes spinWheel {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(1800deg); } /* 5 marta to'liq aylanadi */
+}
+
+@keyframes popUp {
+  to { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Baraban ichidagi sektorlar vizuali */
+.wheel_sector {
+    position: absolute;
+    font-size: 24px;
+}
+.wheel_sector:nth-child(1) { top: 20px; }
+.wheel_sector:nth-child(2) { right: 20px; }
+.wheel_sector:nth-child(3) { bottom: 20px; }
+.wheel_sector:nth-child(4) { left: 20px; }
+
+/* Header qismi */
+.shop_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.shop_title {
+  font-size: 2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.shop_user_balance {
+  display: flex;
+  gap: 15px;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 10px 20px;
+  border-radius: 50px;
+}
+
+/* Bo'limlar */
+.shop_section {
+  margin-bottom: 40px;
+}
+
+.shop_section_title {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Grid sistemasi */
+.shop_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.shop_grid_alt {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* Kartochkalar dizayni */
+.shop_card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, border 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.shop_card:hover {
+  transform: translateY(-5px);
+}
+
+.shop_card_icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.shop_card_name {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+/* Tugmalar */
+.shop_buy_btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+}
+
+.shop_buy_btn_outline {
+  background: transparent;
+  border: 2px solid #e74c3c;
+  color: #e74c3c;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+}
+
+/* Donat kartochkalari */
+.shop_donate_card {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  padding: 20px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.shop_donate_amount {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.shop_donate_btn {
+  background: white;
+  color: #6c5ce7;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* STATUSLAR UCHUN MAXSUS RANGLAR */
+.shop_status_gold { border: 2px solid #f1c40f; }
+.shop_status_diamond { border: 2px solid #3498db; }
+.shop_status_vip { border: 2px solid #9b59b6; animation: glow 2s infinite; }
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px #9b59b6; }
+  50% { box-shadow: 0 0 20px #9b59b6; }
+  100% { box-shadow: 0 0 5px #9b59b6; }
+}
+
+/* ===========================================
+   DARK MODE OPTIMIZATSIYASI 
+   =========================================== */
+
+body.dark-theme .shop_container {
+  color: #ecf0f1;
+}
+
+body.dark-theme .shop_header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme .shop_card {
+  background: #2c3e50;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .shop_user_balance {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme .shop_buy_btn_outline {
+  border-color: #ff7675;
+  color: #ff7675;
+}
+
+body.dark-theme .shop_buy_btn_outline:hover {
+  background: #ff7675;
+  color: #fff;
+}
+/* ===========================================
+   YANGI BO'LIMLAR UCHUN STILLAR
+   =========================================== */
+
+/* 1. Exchange (Ayirboshlash) Bo'limi */
+.exchange_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.exchange_card {
+  background: rgba(39, 174, 96, 0.1);
+  border: 2px dashed #27ae60;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+}
+
+.exchange_btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.exchange_btn:hover {
+  transform: scale(1.05);
+  background: #219150;
+}
+
+/* 2. Lucky Wheel (Baraban) Bo'limi */
+.wheel_container {
+  background: radial-gradient(circle, #2c3e50, #000);
+  padding: 30px;
+  border-radius: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  color: white;
+  border: 3px solid #f1c40f;
+}
+
+.wheel_graphic {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wheel_circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 8px solid #f1c40f;
+  background: conic-gradient(
+    #e74c3c 0deg 90deg, 
+    #3498db 90deg 180deg, 
+    #2ecc71 180deg 270deg, 
+    #9b59b6 270deg 360deg
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  box-shadow: 0 0 20px rgba(241, 196, 15, 0.5);
+}
+
+.wheel_pointer {
+  position: absolute;
+  top: -10px;
+  z-index: 10;
+  font-size: 1.5rem;
+  color: #f1c40f;
+}
+
+.spinning .wheel_circle {
+  animation: spin_animation 1s linear infinite;
+}
+
+@keyframes spin_animation {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.wheel_spin_btn {
+  background: #f1c40f;
+  color: #000;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 30px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
+}
+
+.wheel_spin_btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
+/* 3. Donat "Best Deal" Effekti */
+.best_deal {
+  position: relative;
+  border: 2px solid #f1c40f !important;
+  transform: scale(1.03);
+  overflow: hidden;
+}
+
+.popular_tag {
+  position: absolute;
+  top: 10px;
+  right: -30px;
+  background: #f1c40f;
+  color: black;
+  font-size: 0.7rem;
+  padding: 2px 30px;
+  transform: rotate(45deg);
+  font-weight: bold;
+}
+
+/* 4. Reklama (Ads) Bo'limi */
+.ads_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.ads_card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.ads_info h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.ads_info p {
+  color: #27ae60;
+  font-weight: bold;
+  margin: 5px 0 0 0;
+}
+
+.ads_btn {
+  background: #34495e;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* 5. Balans Vizualizatsiyasi */
+.balance_item {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* Dark Mode Moslashuvi */
+body.dark-theme .exchange_card {
+  background: rgba(39, 174, 96, 0.2);
+}
+
+body.dark-theme .ads_card {
+  background: #34495e;
+  color: white;
+}
+
+body.dark-theme .ads_btn {
+  background: #2ecc71;
+}
+/* ===========================================
+   YANGI QO'SHILGAN BO'LIMLAR UCHUN QO'SHIMCHA CSS
+   =========================================== */
+
+/* 1. Exchange (Ayirboshlash) */
+.shop_exchange_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.shop_exchange_card {
+  background: rgba(39, 174, 96, 0.05);
+  border: 1px dashed #27ae60;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shop_exchange_btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* 2. Uchta Baraban (Lucky Wheels) */
+.shop_wheels_container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.shop_wheel_card {
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border: 2px solid transparent;
+}
+
+/* Har xil baraban ranglari */
+.shop_wheel_common { border-color: #27ae60; }
+.shop_wheel_premium { border-color: #3498db; }
+.shop_wheel_vip { border-color: #9b59b6; animation: shop_glow 2s infinite; }
+
+.shop_wheel_graphic {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 15px auto;
+}
+
+.shop_wheel_circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: #f9f9f9;
+}
+
+.shop_wheel_pointer {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+/* Spin Animatsiyasi */
+.shop_spinning .shop_wheel_circle {
+  animation: shop_spin_anim 1s linear infinite;
+}
+
+@keyframes shop_spin_anim {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.shop_wheel_btn {
+  border: none;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* 3. Kengaytirilgan Reklama (Ads) */
+.shop_ads_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+}
+
+.shop_ad_card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.shop_ad_icon {
+  font-size: 1.5rem;
+  background: #eee;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.shop_ad_info h4 { margin: 0; font-size: 0.9rem; }
+.shop_ad_info p { margin: 2px 0 0; color: #27ae60; font-weight: bold; font-size: 0.8rem; }
+
+.shop_ad_btn {
+  margin-left: auto;
+  background: #34495e;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Donat uchun qo'shimcha: Best Deal belgisi */
+.shop_best_deal {
+  border: 2px solid #f1c40f !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.shop_popular_tag {
+  position: absolute;
+  top: 10px;
+  right: -25px;
+  background: #f1c40f;
+  color: black;
+  font-size: 0.6rem;
+  padding: 2px 25px;
+  transform: rotate(45deg);
+  font-weight: bold;
+}
+
+/* Dark mode uchun yangi qismlarni moslashtirish */
+body.dark-theme .shop_wheel_card,
+body.dark-theme .shop_ad_card {
+  background: #2c3e50;
+  color: white;
+}
+body.dark-theme .shop_wheel_circle { background: #1a1a2e; }
+/* Notification toast */
+.shop_notification {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.9); border: 1px solid rgba(249,199,79,0.5);
+  color: #f9c74f; padding: 12px 28px; border-radius: 12px;
+  font-weight: bold; font-size: 0.9rem; z-index: 9999;
+  animation: notifSlide 0.3s ease;
+}
+@keyframes notifSlide { 0% { top: -20px; opacity: 0; } 100% { top: 20px; opacity: 1; } }
+
+.shop_prize_confetti { font-size: 1.5rem; margin-bottom: 8px; }
+.shop_prize_name { font-size: 1.3rem; font-weight: bold; color: #f9c74f; margin: 8px 0 4px; }
