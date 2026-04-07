@@ -51,20 +51,13 @@ const GAME_RULES = `
 • Mafia: Mafia soni aholi soniga teng/ortiq bo'lsa — G'ALABA!
 `;
 
-const SinglePlayer = ({ onBack, activeRole }) => {
+const SinglePlayer = ({ onBack, activeRole, user }) => {
   const s = useGameStore();
   const chatEndRef  = useRef(null);
   const [showChat, setShowChat]   = useState(true);
   const [showRules, setShowRules] = useState(false);
   const [showSurrender, setShowSurrender] = useState(false);
 
-  // Timer
-  useEffect(() => {
-    let timer;
-    if (s.gameState === 'playing' && !s.isTimerPaused) {
-      timer = setInterval(() => s.tick(), 1000);
-    }
-  
   // ===== QUEST PROGRESS TRACKING =====
   const trackSinglePlayerQuest = async (won, role) => {
     const uid = auth.currentUser?.uid;
@@ -72,7 +65,6 @@ const SinglePlayer = ({ onBack, activeRole }) => {
     try {
       const snap = await get(ref(database, `users/${uid}/quests`));
       const q = snap.exists() ? snap.val() : {};
-      const inc = (id) => ({ id, cur: q[id]?.progress || 0 });
       const updates = {};
       const add = (id, n=1) => { updates[`quests/${id}/progress`] = (q[id]?.progress || 0) + n; };
 
@@ -90,12 +82,23 @@ const SinglePlayer = ({ onBack, activeRole }) => {
         if (r === 'shifokor') { add('q_shifokor_win_1'); add('q_shifokor_win_3'); add('q_shifokor_win_5'); add('q_shifokor_win_10'); add('q_sp_shifokor_3'); }
         if (r === 'komissar') { add('q_komissar_win_1'); add('q_komissar_win_3'); add('q_komissar_win_5'); add('q_komissar_win_10'); add('q_sp_komissar_3'); }
         if (r === 'don')      { add('q_don_win_1'); add('q_don_win_3'); add('q_don_win_5'); add('q_don_win_10'); add('q_sp_don_win_3'); }
+
+        // FIX: G'olibga tanga va yulduz berish
+        const { runTransaction } = await import('firebase/database');
+        await runTransaction(ref(database, `users/${uid}/coins`), (cur) => (cur || 0) + 300);
+        await runTransaction(ref(database, `users/${uid}/stars`), (cur) => (cur || 0) + 5);
       }
       await update(ref(database, `users/${uid}`), updates);
     } catch(err) { console.error('trackSinglePlayerQuest:', err); }
   };
 
-  return () => clearInterval(timer);
+  // Timer
+  useEffect(() => {
+    let timer;
+    if (s.gameState === 'playing' && !s.isTimerPaused) {
+      timer = setInterval(() => s.tick(), 1000);
+    }
+    return () => clearInterval(timer);
   }, [s.gameState, s.isTimerPaused]);
 
   // Chat scroll
@@ -110,6 +113,20 @@ const SinglePlayer = ({ onBack, activeRole }) => {
 
   const userPlayer = s.players.find(p => p.isUser);
   const isAlive = userPlayer?.isAlive;
+
+  // FIX: O'yin tugaganda quest va reward tracking
+  const hasTrackedRef = useRef(false);
+  useEffect(() => {
+    if (s.gameState === 'ended' && !hasTrackedRef.current) {
+      hasTrackedRef.current = true;
+      const userWon = (s.gameResult === 'WIN' && s.userRole !== 'Mafia' && s.userRole !== 'Don') ||
+                     (s.gameResult === 'LOSE' && (s.userRole === 'Mafia' || s.userRole === 'Don'));
+      trackSinglePlayerQuest(userWon, s.userRole);
+    }
+    if (s.gameState === 'lobby') {
+      hasTrackedRef.current = false;
+    }
+  }, [s.gameState]);
 
   // G'oliblar ekrani
   if (s.gameState === 'ended') {

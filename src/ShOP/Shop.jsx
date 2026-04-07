@@ -4,7 +4,8 @@ import { auth, database } from "../firebase";
 import { ref, onValue, update, runTransaction, get } from "firebase/database";
 import './Shop.css';
 
-const Shop = () => {
+// FIX: user prop qabul qilindi (App.jsx dan uzatiladi)
+const Shop = ({ user: userProp }) => {
   const { t } = useTranslation();
   const [isSpinning, setIsSpinning]   = useState(false);
   const [userData, setUserData]       = useState({ coins: 0, stars: 0, inventory: { roles: {} }, vip: 'None' });

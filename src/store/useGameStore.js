@@ -292,6 +292,8 @@ const useGameStore = create((set, get) => ({
   },
 
   // ===== FIREBASE GA NATIJA SAQLASH =====
+  // FIX: Quest tracking SinglePlayer.jsx ga ko'chirildi (double counting oldini olish uchun)
+  // Bu funksiya faqat statistika va aktiv rol boshqaruvini bajaradi
   saveGameResult: async (result) => {
     const currentUser = auth.currentUser;
     if (!currentUser) return;
@@ -301,13 +303,11 @@ const useGameStore = create((set, get) => ({
     const won = (result === 'WIN' && !isMafia) || (result === 'LOSE' && isMafia);
 
     try {
-      const userRef = ref(database, `users/${currentUser.uid}`);
       const updates = {};
       const faction = isMafia ? 'mafia' : 'aholi';
 
       // ==== Statistika — runTransaction bilan to'g'ri increment ====
       const { runTransaction } = await import('firebase/database');
-      // all_game
       await runTransaction(ref(database, `users/${currentUser.uid}/${faction}/${faction === 'mafia' ? 'mafia_all_game' : 'aholi_all_game'}`), (cur) => (cur || 0) + 1);
       if (won) await runTransaction(ref(database, `users/${currentUser.uid}/${faction}/wins`), (cur) => (cur || 0) + 1);
 
@@ -318,34 +318,16 @@ const useGameStore = create((set, get) => ({
       if (userRole === 'Shifokor') await runTransaction(ref(database, `users/${currentUser.uid}/aholi/rollar/shifokor`), c => (c||0)+1);
       if (userRole === 'Aholi')    await runTransaction(ref(database, `users/${currentUser.uid}/aholi/rollar/tinchaholi`), c => (c||0)+1);
 
-      // Aktiv rolni inventardan kamaytirish (to'g'ri transaction bilan)
+      // Aktiv rolni inventardan kamaytirish
       const { activeRole } = get();
       if (activeRole && activeRole !== 'none') {
         await runTransaction(ref(database, `users/${currentUser.uid}/inventory/roles/${activeRole}`), c => Math.max(0, (c||0) - 1));
         updates['/active_role'] = 'none';
       }
 
-      // ==== QUEST PROGRESS ====
-      const snapQ = await (await import('firebase/database')).get(ref(database, `users/${currentUser.uid}/quests`));
-      const q = snapQ.exists() ? snapQ.val() : {};
-      const add = (id, n=1) => { updates[`quests/${id}/progress`] = (q[id]?.progress || 0) + n; };
-
-      add('q_sp_play_1'); add('q_sp_play_3'); add('q_sp_play_5'); add('q_sp_play_10');
-      add('q_total_1'); add('q_total_3'); add('q_total_5'); add('q_total_10');
-      add('q_total_20'); add('q_total_30'); add('q_total_50'); add('q_total_75'); add('q_total_100');
-
-      if (won) {
-        add('q_sp_win_1'); add('q_sp_win_5'); add('q_sp_win_10');
-        add('q_win_total_5'); add('q_win_total_20'); add('q_win_total_50');
-        const r = userRole?.toLowerCase();
-        if (r === 'mafia')    { add('q_mafia_win_1'); add('q_mafia_win_3'); add('q_mafia_win_5'); add('q_mafia_win_10'); add('q_sp_mafia_win_3'); }
-        if (r === 'aholi')    { add('q_aholi_win_1'); add('q_aholi_win_3'); add('q_aholi_win_5'); add('q_aholi_win_10'); }
-        if (r === 'shifokor') { add('q_shifokor_win_1'); add('q_shifokor_win_3'); add('q_shifokor_win_5'); add('q_shifokor_win_10'); add('q_sp_shifokor_3'); }
-        if (r === 'komissar') { add('q_komissar_win_1'); add('q_komissar_win_3'); add('q_komissar_win_5'); add('q_komissar_win_10'); add('q_sp_komissar_3'); }
-        if (r === 'don')      { add('q_don_win_1'); add('q_don_win_3'); add('q_don_win_5'); add('q_don_win_10'); add('q_sp_don_win_3'); }
+      if (Object.keys(updates).length > 0) {
+        await update(ref(database, `users/${currentUser.uid}`), updates);
       }
-
-      await update(userRef, updates);
     } catch (err) {
       console.error('saveGameResult error:', err);
     }

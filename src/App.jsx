@@ -260,6 +260,21 @@ function App() {
                     <>
                       <button className="secondary-btn" onClick={() => setAuthMode('login')}>🔑 Kirish</button>
                       <button className="secondary-btn" onClick={() => setAuthMode('register')} style={{ marginLeft:'10px' }}>📝 Ro'yxatdan o'tish</button>
+                      {/* FIX: Google tugmasi faqat bir joyda — authMode null bo'lganda */}
+                      <div style={{ marginTop:'16px' }}>
+                        <button
+                          onClick={handleGoogleLogin}
+                          style={{
+                            display:'inline-flex', alignItems:'center', gap:'8px',
+                            background:'white', color:'#333', border:'none', borderRadius:'8px',
+                            padding:'10px 20px', fontWeight:'bold', cursor:'pointer', fontSize:'0.9rem',
+                            boxShadow:'0 2px 8px rgba(0,0,0,0.3)'
+                          }}
+                        >
+                          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width:20 }} />
+                          Google bilan kirish
+                        </button>
+                      </div>
                     </>
                   ) : (
                     <div className="auth-form" style={{ display:'flex', flexDirection:'column', gap:'10px', maxWidth:'320px', margin:'auto' }}>
@@ -299,22 +314,7 @@ function App() {
                     </div>
                   )}
 
-                  {!authMode && (
-                    <div style={{ marginTop:'16px' }}>
-                      <button
-                        onClick={handleGoogleLogin}
-                        style={{
-                          display:'inline-flex', alignItems:'center', gap:'8px',
-                          background:'white', color:'#333', border:'none', borderRadius:'8px',
-                          padding:'10px 20px', fontWeight:'bold', cursor:'pointer', fontSize:'0.9rem',
-                          boxShadow:'0 2px 8px rgba(0,0,0,0.3)'
-                        }}
-                      >
-                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width:20 }} />
-                        Google bilan kirish
-                      </button>
-                    </div>
-                  )}
+                  {/* FIX: Ikkinchi Google button olib tashlandi — yuqorida !authMode blokida mavjud */}
                 </div>
               ) : (
                 <p className="hero-desc" style={{ color:'#4caf50', fontWeight:'bold', fontSize:'1.1rem', marginTop:'20px' }}>

@@ -22,7 +22,8 @@ const LOGOS = {
   star:     "https://img.icons8.com/fluency/48/000000/star--v1.png",
 };
 
-const Profile = () => {
+// FIX: user prop qabul qilindi (App.jsx dan uzatiladi)
+const Profile = ({ user: userProp }) => {
   const [user, setUser]           = useState(null);
   const [activeTab, setActiveTab] = useState("all");
   const [loading, setLoading]     = useState(true);

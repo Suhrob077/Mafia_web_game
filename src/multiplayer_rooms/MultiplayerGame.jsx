@@ -2,16 +2,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import useMultiplayerGameStore from '../store/useMultiplayerGameStore';
 import './MultiplayerGame.css';
 
-// Rol rasmlari mapping (singleplayer bilan bir xil)
+// FIX: Hardcoded /src/assets/ yo'llar o'rniga import.meta.url (Vite build uchun to'g'ri)
 const ROLE_IMAGES = {
-  Don:      '/src/assets/mafia_img/cards/don.png',
-  Mafia:    '/src/assets/mafia_img/cards/mafia.png',
-  Komissar: '/src/assets/mafia_img/cards/komissar.png',
-  Shifokor: '/src/assets/mafia_img/cards/shifokor.png',
-  Aholi:    '/src/assets/mafia_img/cards/aholi.png',
-  Sudya:    '/src/assets/mafia_img/cards/sudya.png',
+  Don:      new URL('../assets/mafia_img/cards/don.png',      import.meta.url).href,
+  Mafia:    new URL('../assets/mafia_img/cards/mafia.png',    import.meta.url).href,
+  Komissar: new URL('../assets/mafia_img/cards/komissar.png', import.meta.url).href,
+  Shifokor: new URL('../assets/mafia_img/cards/shifokor.png', import.meta.url).href,
+  Aholi:    new URL('../assets/mafia_img/cards/aholi.png',    import.meta.url).href,
+  Sudya:    new URL('../assets/mafia_img/cards/sudya.png',    import.meta.url).href,
 };
-const CARD_BG = '/src/assets/mafia_img/fonts/card_bg.png';
+const CARD_BG = new URL('../assets/mafia_img/fonts/card_bg.png', import.meta.url).href;
 
 function MultiplayerGame({ user, roomId, onBack }) {
   const s = useMultiplayerGameStore();
