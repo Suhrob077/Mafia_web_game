@@ -1,14 +1,10 @@
 /**
- * SinglePlayer.jsx — TO'LDIRILGAN VERSIYA
- * 
- * Tuzatmalar:
- * - activeRole prop qabul qiladi (shopdan olingan)
- * - Chat panel yashirilgan/ko'rsatilgan toggle
- * - Qoidalar modali
- * - Tun harakatlari to'g'ri ishlaydi
- * - AI helper (qoidalar tushuntirish)
- * - Taslim bo'lish tugmasi
- * - G'oliblarga sovg'alar ko'rsatish
+ * SinglePlayer.jsx — YANGILANGAN VERSIYA
+ * - Bot AI yaxshilangan (aqlli nishon, commissar boti, shifokor boti)
+ * - Chat to'liq: barcha voqealar logga tushadi
+ * - Foydalanuvchi chat yoza oladi, botlar javob beradi
+ * - Uchuvchi emoji animatsiyalar (karta ustida)
+ * - Barcha tun/kun harakatlari chatga yoziladi
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { auth, database } from '../firebase';
@@ -49,16 +45,44 @@ const GAME_RULES = `
 🏆 G'ALABA SHARTLARI:
 • Aholi: Barcha mafialarni chetlashtirsa — G'ALABA!
 • Mafia: Mafia soni aholi soniga teng/ortiq bo'lsa — G'ALABA!
+
+💬 CHAT:
+• Kunduz paytida chat yozishingiz mumkin
+• Botlar xabarlaringizga javob beradi
+• Barcha o'yin voqealari chatda ko'rinadi
 `;
+
+// Log xabarini formatlash: Sistema xabarlari emas, kim yozgani ko'rinadi
+const LogMessage = ({ log }) => {
+  const isSistema = log.user === 'Sistema';
+  const isUser = log.user?.includes('(SIZ)');
+  let cls = 'chat-msg-bot';
+  if (isSistema) cls = 'chat-msg-sistema';
+  if (isUser) cls = 'chat-msg-user';
+
+  return (
+    <div className={`Solo_ChatMessage ${cls}`}>
+      <b className={isSistema ? 'gold' : isUser ? 'green' : 'blue'}>{log.user}:</b>{' '}{log.text}
+    </div>
+  );
+};
+
+// Uchuvchi emoji komponenti
+const FloatingEmoji = ({ emoji, x, y }) => (
+  <div className="FloatingEmoji" style={{ left: `${x}%`, top: `${y}%` }}>
+    {emoji}
+  </div>
+);
 
 const SinglePlayer = ({ onBack, activeRole, user }) => {
   const s = useGameStore();
-  const chatEndRef  = useRef(null);
-  const [showChat, setShowChat]   = useState(true);
-  const [showRules, setShowRules] = useState(false);
+  const chatEndRef   = useRef(null);
+  const [showChat, setShowChat]     = useState(true);
+  const [showRules, setShowRules]   = useState(false);
   const [showSurrender, setShowSurrender] = useState(false);
+  const [chatInput, setChatInput]   = useState('');
 
-  // ===== QUEST PROGRESS TRACKING =====
+  // ===== QUEST PROGRESS =====
   const trackSinglePlayerQuest = async (won, role) => {
     const uid = auth.currentUser?.uid;
     if (!uid) return;
@@ -67,12 +91,9 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
       const q = snap.exists() ? snap.val() : {};
       const updates = {};
       const add = (id, n=1) => { updates[`quests/${id}/progress`] = (q[id]?.progress || 0) + n; };
-
-      // Match counters
       add('q_sp_play_1'); add('q_sp_play_3'); add('q_sp_play_5'); add('q_sp_play_10');
       add('q_total_1'); add('q_total_3'); add('q_total_5'); add('q_total_10');
       add('q_total_20'); add('q_total_30'); add('q_total_50'); add('q_total_75'); add('q_total_100');
-
       if (won) {
         add('q_sp_win_1'); add('q_sp_win_5'); add('q_sp_win_10');
         add('q_win_total_5'); add('q_win_total_20'); add('q_win_total_50');
@@ -82,11 +103,9 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
         if (r === 'shifokor') { add('q_shifokor_win_1'); add('q_shifokor_win_3'); add('q_shifokor_win_5'); add('q_shifokor_win_10'); add('q_sp_shifokor_3'); }
         if (r === 'komissar') { add('q_komissar_win_1'); add('q_komissar_win_3'); add('q_komissar_win_5'); add('q_komissar_win_10'); add('q_sp_komissar_3'); }
         if (r === 'don')      { add('q_don_win_1'); add('q_don_win_3'); add('q_don_win_5'); add('q_don_win_10'); add('q_sp_don_win_3'); }
-
-        // FIX: G'olibga tanga va yulduz berish
         const { runTransaction } = await import('firebase/database');
-        await runTransaction(ref(database, `users/${uid}/coins`), (cur) => (cur || 0) + 300);
-        await runTransaction(ref(database, `users/${uid}/stars`), (cur) => (cur || 0) + 5);
+        await runTransaction(ref(database, `users/${uid}/coins`), c => (c||0)+300);
+        await runTransaction(ref(database, `users/${uid}/stars`), c => (c||0)+5);
       }
       await update(ref(database, `users/${uid}`), updates);
     } catch(err) { console.error('trackSinglePlayerQuest:', err); }
@@ -106,15 +125,7 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [s.logs]);
 
-  const getCardImage = (role) => ROLE_IMAGES[role] || cb;
-
-  const canPerformNightAction = !s.isDay && s.nightActionTarget &&
-    s.gameState === 'playing' && !s.isTimerPaused;
-
-  const userPlayer = s.players.find(p => p.isUser);
-  const isAlive = userPlayer?.isAlive;
-
-  // FIX: O'yin tugaganda quest va reward tracking
+  // Quest tracking
   const hasTrackedRef = useRef(false);
   useEffect(() => {
     if (s.gameState === 'ended' && !hasTrackedRef.current) {
@@ -123,17 +134,33 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
                      (s.gameResult === 'LOSE' && (s.userRole === 'Mafia' || s.userRole === 'Don'));
       trackSinglePlayerQuest(userWon, s.userRole);
     }
-    if (s.gameState === 'lobby') {
-      hasTrackedRef.current = false;
-    }
+    if (s.gameState === 'lobby') hasTrackedRef.current = false;
   }, [s.gameState]);
 
-  // G'oliblar ekrani
+  const getCardImage = (role) => ROLE_IMAGES[role] || cb;
+  const canPerformNightAction = !s.isDay && s.nightActionTarget && s.gameState === 'playing' && !s.isTimerPaused;
+  const userPlayer = s.players.find(p => p.isUser);
+  const isAlive = userPlayer?.isAlive;
+
+  // Chat yuborish
+  const handleSendMessage = () => {
+    if (!chatInput.trim()) return;
+    s.sendUserMessage(chatInput.trim());
+    setChatInput('');
+  };
+
+  const handleChatKeyDown = (e) => {
+    if (e.key === 'Enter') handleSendMessage();
+  };
+
+  // ===== GAME OVER SCREEN =====
   if (s.gameState === 'ended') {
     const userWon = (s.gameResult === 'WIN' && s.userRole !== 'Mafia' && s.userRole !== 'Don') ||
                    (s.gameResult === 'LOSE' && (s.userRole === 'Mafia' || s.userRole === 'Don'));
     return (
       <div className={`Solo_EndScreen ${userWon ? 'win' : 'lose'}`}>
+        {/* Floating emojis end screen */}
+        {s.floatingEmojis.map(e => <FloatingEmoji key={e.id} {...e} />)}
         <div className="Solo_EndCard">
           <div className="Solo_EndIcon">{userWon ? '🏆' : '💀'}</div>
           <h1 className={`Solo_EndTitle ${s.gameResult === 'WIN' ? 'win-text' : 'lose-text'}`}>
@@ -172,6 +199,9 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
   return (
     <div className={`Solo_MainContainer ${!s.isDay ? 'Solo_NightTheme' : ''}`}>
 
+      {/* FLOATING EMOJIS */}
+      {s.floatingEmojis.map(e => <FloatingEmoji key={e.id} {...e} />)}
+
       {/* RULES MODAL */}
       {showRules && (
         <div className="Solo_Modal_Overlay" onClick={() => setShowRules(false)}>
@@ -182,7 +212,7 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
         </div>
       )}
 
-      {/* SURRENDER CONFIRM */}
+      {/* SURRENDER */}
       {showSurrender && (
         <div className="Solo_Modal_Overlay">
           <div className="Solo_Modal" style={{ maxWidth: '360px' }}>
@@ -221,6 +251,18 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
           )}
           <button className="Solo_NavBtn" onClick={onBack}>← Chiqish</button>
         </nav>
+
+        {/* Tirik o'yinchilar soni */}
+        <div className="Solo_AliveCount">
+          <div className="alive-item">
+            <span>👥</span>
+            <span>{s.players.filter(p => p.isAlive).length} / {s.players.length}</span>
+          </div>
+          <div className="alive-item mafia-count">
+            <span>😈</span>
+            <span>Mafia: ?</span>
+          </div>
+        </div>
       </aside>
 
       {/* MAIN GAME ARENA */}
@@ -244,7 +286,6 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
           {canPerformNightAction && (
             <div className="NightActionPanel">
               <p>Nishon: <strong>{s.players.find(p => p.id === s.nightActionTarget)?.name}</strong></p>
-
               {s.userRole === 'Komissar' && !s.sheriffUsedAction && (
                 <div className="ActionBtns">
                   <button className="btn-check" onClick={() => s.executeSheriffAction('check')}>
@@ -258,13 +299,11 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
               {s.userRole === 'Komissar' && s.sheriffUsedAction && (
                 <p style={{ color: '#4caf50' }}>✅ Harakatingiz bajarildi.</p>
               )}
-
               {s.userRole === 'Shifokor' && (
-                <button className="btn-heal" onClick={s.executeDoctorAction}>➕ DAVOLASH</button>
+                <button className="btn-heal" onClick={s.executeDoctorAction}>💉 DAVOLASH</button>
               )}
-
               {(s.userRole === 'Mafia' || s.userRole === 'Don') && (
-                <p className="status-text">⚔️ Mafia nishoni tanlandi. Tun yakunini kuting...</p>
+                <p className="status-text">⚔️ Nishon tanlandi. Tun yakunini kuting...</p>
               )}
             </div>
           )}
@@ -274,9 +313,16 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
               <p style={{ color: 'rgba(255,255,255,0.6)' }}>😴 Aholi tunda uxlaydi...</p>
             </div>
           )}
+
+          {/* Tun: mafia/don nishon tanlayapti */}
+          {!s.isDay && !s.nightActionTarget && (s.userRole === 'Mafia' || s.userRole === 'Don') && s.gameState === 'playing' && !s.isTimerPaused && (
+            <div className="NightActionPanel">
+              <p style={{ color: '#ff9800' }}>🎯 Qurbon tanlang (kartaga bosing)</p>
+            </div>
+          )}
         </div>
 
-        {/* DOIRA - O'YINCHILAR */}
+        {/* DOIRA — O'YINCHILAR */}
         <div className="Solo_CircleTable">
           {s.players.map((player, index) => {
             const angle    = (360 / 8) * index;
@@ -304,6 +350,9 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
                   {player.isUser && s.userRole === 'Shifokor' && s.hasDoctorHealedSelf && (
                     <div className="HealedMark">💚</div>
                   )}
+                  {player.knowsAsMafia && !isDead && (
+                    <div className="MafiaMark">🔴</div>
+                  )}
                 </div>
                 <div className="Solo_PlayerMeta">
                   <span>{player.name} {player.isUser && '(SIZ)'}</span>
@@ -318,15 +367,40 @@ const SinglePlayer = ({ onBack, activeRole, user }) => {
       {/* CHAT PANEL */}
       {showChat && (
         <section className="Solo_ChatSide">
-          <div className="Solo_ChatHeader">📜 O'YIN JARYONI</div>
+          <div className="Solo_ChatHeader">
+            💬 O'YIN CHATI
+            <span className="chat-phase-badge">{s.isDay ? '☀️ Kun' : '🌙 Tun'}</span>
+          </div>
           <div className="Solo_ChatList">
             {s.logs.map(log => (
-              <div key={log.id} className="Solo_ChatMessage">
-                <b className={log.user === 'Sistema' ? 'gold' : 'blue'}>{log.user}:</b> {log.text}
-              </div>
+              <LogMessage key={log.id} log={log} />
             ))}
             <div ref={chatEndRef} />
           </div>
+          {/* Chat input — faqat tirik o'yinchi kunduz yoza oladi */}
+          {s.gameState === 'playing' && isAlive && s.isDay && (
+            <div className="Solo_ChatInput">
+              <input
+                type="text"
+                value={chatInput}
+                onChange={e => setChatInput(e.target.value)}
+                onKeyDown={handleChatKeyDown}
+                placeholder="Xabar yozing..."
+                maxLength={80}
+              />
+              <button onClick={handleSendMessage} disabled={!chatInput.trim()}>➤</button>
+            </div>
+          )}
+          {s.gameState === 'playing' && isAlive && !s.isDay && (
+            <div className="Solo_ChatInputDisabled">
+              🌙 Tunda chat yozib bo'lmaydi
+            </div>
+          )}
+          {s.gameState === 'playing' && !isAlive && (
+            <div className="Solo_ChatInputDisabled">
+              💀 Vafot etgansiz — chat yozib bo'lmaydi
+            </div>
+          )}
         </section>
       )}
 

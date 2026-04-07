@@ -1,0 +1,230 @@
+{
+  "roles": {
+    "Komissar": {
+      "day_general": [
+        "Kecha qiziq narsalar ko'rdim... 🤔",
+        "Kimdir yolg'on gapirgan bo'lishi kerak! 🧐",
+        "Bugun ehtiyot bo'lish kerak, do'stlar 👀",
+        "Men hamma narsani kuzatib boraman 🔍",
+        "Sezgim menga yomonni ko'rsatyapti 😤",
+        "Hech kimga ishonma deyishadi... to'g'ri gap! 🕵️",
+        "Bugun sessiyadagi barcha so'zlarni yozib oldim 📝",
+        "Mening nazarimda bir kishi juda g'alati ko'rindi 🤨",
+        "Adolat har doim g'alaba qozonadi! ⚖️",
+        "Tez orada hamma aniq bo'ladi 😏"
+      ],
+      "day_personal": [
+        "Men hech narsa bilmayman, keling muhokama qilaylik 😇",
+        "Ovoz berish vaqtida diqqat qiling! ☝️",
+        "Menda bir taxmin bor, lekin hozir aytmayman 🤫",
+        "Bu odam menga ishonchli ko'rinyapti ✅",
+        "Kecha tunda juda qo'rqinchli edi 😬"
+      ],
+      "night_action": [
+        "Hozir ish boshlanadi... 🔫",
+        "Seni topdim! 🎯",
+        "Adolat kelyapti! 💪",
+        "Bu safar nishonni qo'yib yubormayman 👁️",
+        "Shahrimni himoya qilish mening vazifam 🛡️"
+      ]
+    },
+    "Mafia": {
+      "day_general": [
+        "Hammaning ahvoli qanday? 😊",
+        "Bugun tinch kun bo'lsin 🙏",
+        "Men hech kimdan shubhalanmayman 😌",
+        "Keling birgalikda o'ylaymiz 💭",
+        "Mafiani topish qiyin emas, ular orasida bo'lmay men! 😂",
+        "Qiziq o'yin, ha? 🎭",
+        "Mening ovozim eng adolatli odamga ketadi 👍",
+        "Hech nima ko'rmadim, hech nima bilmayman 🙈",
+        "Bugun kuni bilan xotirjam yurdim 😇",
+        "Shaharliklar birlashinglar! ✊"
+      ],
+      "day_personal": [
+        "Sen menga ishonchli ko'rinyapsan 🤝",
+        "Keling o'ylaymiz, kim shubhali? 🤔",
+        "Men ham sizlar bilan ovoz beraman 🗳️",
+        "Bugun ovoz tenglik bo'lmasin edi 😅",
+        "Xavotirlanma, biz aholi bilan birgamiz 😊"
+      ],
+      "night_action": [
+        "Hozir ish...",
+        "Jimgina...",
+        "👁️",
+        "Tun bizniki 🌙",
+        "Ish bajarildi 🤫"
+      ]
+    },
+    "Don": {
+      "day_general": [
+        "Bugun hammaga salom 😎",
+        "O'yin qiziq borayapti, lekin men xotirjamman 🙂",
+        "Mening fikrimcha eng shubhali kishi ovoz ko'p olishi kerak 🎯",
+        "Lider bo'lish qiyin, lekin men uddalay olaman 💼",
+        "Hammani tinglagan yaxshi 👂",
+        "Bu o'yinda aql muhim 🧠",
+        "Men har doim to'g'ri qaror qilaman 😌",
+        "Shahar xavfsizligi muhim masala! 🏛️",
+        "Keling faktlarga qarab gaplashamiz 📊",
+        "Mening ovozim engil bo'lmaydi ⚖️"
+      ],
+      "day_personal": [
+        "Sen qanday fikrdasан? 🤔",
+        "Menga ishon, men aholiman 😊",
+        "Birgalikda mafiadan tozalaymiz 💪",
+        "O'ying qiziq, men sizni yaxshi ko'raman 😄",
+        "Bu safar g'alaba bizniki! 🏆"
+      ],
+      "night_action": [
+        "Don so'zlaydi... 👑",
+        "Nishon tayinlandi 🎯",
+        "Tunda hamma jim 🌑",
+        "Bizning kuchimiz birlashgan 💎",
+        "Ertaga yangi kun... 🌅"
+      ]
+    },
+    "Shifokor": {
+      "day_general": [
+        "Hammaning sog'lig'i yaxshimi? 💉",
+        "Men doim himoya qilishga tayyorman 🏥",
+        "Kecha qiyin tun edi 😔",
+        "Hayotni asrash eng muhim vazifam ❤️",
+        "Bugun kimga yordam kerak bo'lsa aytsin 🩺",
+        "Men aholi tomonida turaman! 🤍",
+        "Davolanish uchun hech qachon kech emas 💊",
+        "Mafia qurbonlarini ko'rmaylik iltimos 🙏",
+        "Shifokorlik qiyin kasb, lekin muhim 👨‍⚕️",
+        "Bugun ham tirikman, demak ish bor 😊"
+      ],
+      "day_personal": [
+        "Sen sog'misan? Ko'zing charchagan ko'rinyapti 😕",
+        "Kecha tunda qo'rqib ketdim 😨",
+        "Kimni himoyalarim kerakligini bilmayman 🤔",
+        "Men sizni davolay olaman ☺️",
+        "Xavotirlanma, men yoningdaman 💪"
+      ],
+      "night_action": [
+        "Kim himoyaga muhtoj? 🏥",
+        "Himoya qilyapman 🛡️",
+        "Xavfsiz bo'ling ✅",
+        "Kechasi ham kuzatib turaman 👁️",
+        "Tirik qolsin! ❤️"
+      ]
+    },
+    "Aholi": {
+      "day_general": [
+        "Men oddiy odamman, hech nima bilmayman 😊",
+        "Bugun ovoz berish muhim! 🗳️",
+        "Mafia orasimizda, topishimiz kerak 🕵️",
+        "Kecha tunda qo'rqib ketdim 😱",
+        "Hammaga salom, ahvollar qanday? 👋",
+        "Menga shubhali odam ko'rinyapti 🤨",
+        "Birgalikda jang qilaylik mafiaга qarshi 💪",
+        "O'yin qiziq ketayapti 😄",
+        "Bugun kimni chiqaramiz? 🤔",
+        "Mening fikrimcha... nega bunday qildi u? 🧐"
+      ],
+      "day_personal": [
+        "Sen qanday fikrda? 💬",
+        "Seni ishonchli deb hisoblayman 😊",
+        "Qo'rqmasdан gapir, biz qulyapmiz 👂",
+        "Birgalikda boshqaraylik ovozlarni 🗳️",
+        "Ertaga ham sog'-salomat bo'laylik 🙏"
+      ],
+      "night_action": [
+        "😴 Uxlayapman...",
+        "💤 Zz...",
+        "Tunda nimalar bo'ldi ekan? 😴",
+        "Ertalab ko'ramiz 🌅",
+        "Tinchoyin uxladim 😪"
+      ]
+    }
+  },
+  "greetings": {
+    "all": [
+      "Assalomu alaykum! 👋",
+      "Salom! Yaxshimisiz? 😊",
+      "Ahvollar qanday? 🙂",
+      "Xayrli kun! ☀️",
+      "Hey, barchaga salom! 👐",
+      "O'yin qiziq bo'lmoqda! 🎭",
+      "Kelayotgan jangga tayyormisiz? 😤",
+      "Vah, jamoa to'planibdi! 🤝",
+      "Hamma yaxshi ko'rinyapti 😌"
+    ],
+    "mafia_hidden": [
+      "Salom, men oddiy shaharlikman 😇",
+      "Assalomu alaykum! Tinch kun bo'lsin 🙏",
+      "Hey! Bugungi muhokama qiziq bo'lar 😊",
+      "Yaxshi! Biz birgalikda mafiadan himoyalanaylik 💪",
+      "Ahvollar yaxshi, o'yinni kuzatib boraman 👀"
+    ]
+  },
+  "reactions": {
+    "suspicion": [
+      "Bu juda shubhali! 🤔",
+      "Nimaga unday deding? 🧐",
+      "G'alati gapirding ha 😒",
+      "Men sеnga ishonmayman! 😤",
+      "Bu yolg'on! 😠"
+    ],
+    "agree": [
+      "To'g'ri gap! 👍",
+      "Men ham shunday o'ylayman ✅",
+      "Ha, qo'shilaman! 🙌",
+      "Aynan! 💯",
+      "Biz bir xil fikrdamiz 🤝"
+    ],
+    "casual": [
+      "Qiziq... 🤭",
+      "Hmm... 🤔",
+      "Nima deyapsan? 😅",
+      "Ha-ha! 😄",
+      "Voah! 😮"
+    ]
+  },
+  "system_events": {
+    "mafia_kill": [
+      "Mafia o'z nishonini tanladi 🎯",
+      "Tunda soya yurdi... 🌑",
+      "Mafia harakatga o'tdi 🔪",
+      "Kim qurbon bo'ldi ekan? 😰",
+      "Tun qorong'i va xavfli 🌙"
+    ],
+    "doctor_heal": [
+      "Shifokor kimnidir davoladi 💉",
+      "Yana bir hayot saqlanib qoldi ❤️",
+      "Shifokorning qo'llari qutqardi 🏥",
+      "Bugun kimdir omadli 🍀",
+      "Himoya qo'li uzatildi 🛡️"
+    ],
+    "komissar_check": [
+      "Komissar kechasi tekshiruv o'tkazdi 🔍",
+      "Sheriff shaharda faol 🕵️",
+      "Qoronquda haqiqat axtarildi 👁️",
+      "Komissar nimani topdi ekan? 🤫",
+      "Tekshiruv tugadi 📋"
+    ],
+    "komissar_kill": [
+      "Komissar nishonga oldi 🔫",
+      "Adalat qilichi ko'tarildi ⚖️",
+      "Sheriff ish boshlamoqda 💥",
+      "Bu kecha birov jazolandi 🎯",
+      "Adolat shafqatsiz 😤"
+    ],
+    "vote_result": [
+      "Shahar o'z qarorini bildirdi 🗳️",
+      "Ovozlar sanaldi... 📊",
+      "Demokratiya ishlayapti 🏛️",
+      "Shahar aholisi gapirdi 📢",
+      "Natijalar ma'lum bo'ldi 📜"
+    ]
+  },
+  "emojis": {
+    "day": ["☀️","🌤️","🏘️","👥","💬","🗳️","⚖️","🧐","🤔","👀","📢","🙌","💪","✊","🎭"],
+    "night": ["🌙","⭐","🔮","👁️","🌑","🔍","🕵️","🗡️","💀","🌟","🔦","🕯️","🌃","🦇","👤"],
+    "action": ["💥","⚡","🎯","🔫","💉","🛡️","❤️","💔","🩹","✅","🚨","🔔","⚠️","🎪","🎲"],
+    "emotion": ["😊","😤","😱","🤔","😮","😅","😄","😨","🙁","😏","😇","🤭","😬","🥶","🤫"]
+  }
+}

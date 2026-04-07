@@ -526,3 +526,222 @@
 /* WIN/LOSE TEXT */
 .win-text  { color: #4caf50; text-shadow: 0 0 20px #4caf5066; }
 .lose-text { color: #ff4444; text-shadow: 0 0 20px #ff444466; }
+
+/* ============================================
+   YANGI STILLAR: Floating Emoji, Chat Input,
+   Alive Count, Mafia Mark
+   ============================================ */
+
+/* --- FLOATING EMOJI ANIMATSIYA --- */
+.FloatingEmoji {
+    position: fixed;
+    font-size: 2rem;
+    pointer-events: none;
+    z-index: 9999;
+    animation: floatUp 2.2s ease-out forwards;
+    user-select: none;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+}
+
+@keyframes floatUp {
+    0%   { opacity: 0; transform: translateY(0px) scale(0.5) rotate(-10deg); }
+    15%  { opacity: 1; transform: translateY(-15px) scale(1.2) rotate(5deg); }
+    50%  { opacity: 1; transform: translateY(-60px) scale(1) rotate(-3deg); }
+    100% { opacity: 0; transform: translateY(-130px) scale(0.7) rotate(8deg); }
+}
+
+/* --- CHAT MSG TURLARI --- */
+.chat-msg-sistema .gold { color: var(--solo-gold); }
+.chat-msg-user .green   { color: #4caf50; }
+.chat-msg-bot .blue     { color: #64b5f6; }
+
+.Solo_ChatMessage {
+    padding: 7px 10px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    border-left: 3px solid transparent;
+}
+
+.chat-msg-sistema {
+    background: rgba(197,160,89,0.08);
+    border-left-color: var(--solo-gold);
+}
+
+.chat-msg-user {
+    background: rgba(76,175,80,0.1);
+    border-left-color: #4caf50;
+}
+
+.chat-msg-bot {
+    background: rgba(100,181,246,0.07);
+    border-left-color: #64b5f6;
+}
+
+/* --- CHAT INPUT --- */
+.Solo_ChatInput {
+    display: flex;
+    gap: 6px;
+    padding: 10px 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.3);
+}
+
+.Solo_ChatInput input {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 8px 14px;
+    color: white;
+    font-size: 0.83rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.Solo_ChatInput input:focus {
+    border-color: var(--solo-gold);
+}
+
+.Solo_ChatInput input::placeholder {
+    color: rgba(255,255,255,0.35);
+}
+
+.Solo_ChatInput button {
+    background: var(--solo-gold);
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Solo_ChatInput button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.Solo_ChatInputDisabled {
+    padding: 10px 14px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.3);
+    font-size: 0.78rem;
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+}
+
+/* --- CHAT HEADER BADGE --- */
+.Solo_ChatHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--solo-gold);
+    background: rgba(0,0,0,0.4);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.chat-phase-badge {
+    font-size: 0.72rem;
+    background: rgba(255,255,255,0.08);
+    padding: 3px 8px;
+    border-radius: 12px;
+    color: rgba(255,255,255,0.7);
+}
+
+/* --- ALIVE COUNT SIDEBAR --- */
+.Solo_AliveCount {
+    margin: auto 0 20px 0;
+    padding: 14px 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.alive-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 0.83rem;
+    color: rgba(255,255,255,0.6);
+}
+
+.alive-item.mafia-count span:last-child {
+    color: rgba(255,100,100,0.7);
+}
+
+/* --- MAFIA MARK ON CARD --- */
+.MafiaMark {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 1.1rem;
+    filter: drop-shadow(0 0 4px red);
+}
+
+/* --- HEALED MARK --- */
+.HealedMark {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+}
+
+/* --- END ACTIONS --- */
+.EndActions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.EndActions button {
+    background: var(--solo-gold);
+    color: #000;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.EndActions button:last-child {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.EndActions button:hover { opacity: 0.85; }
+
+/* --- ROLE BADGE --- */
+.RoleBadge {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 4px 10px;
+    background: rgba(197,160,89,0.15);
+    border: 1px solid var(--solo-gold);
+    border-radius: 20px;
+    color: var(--solo-gold);
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* --- NIGHT PHASE GLOW --- */
+.Solo_NightTheme .Solo_CircleTable {
+    filter: brightness(0.85) saturate(0.8);
+}
+
